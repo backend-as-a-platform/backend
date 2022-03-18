@@ -6,21 +6,15 @@ import { IUser, IUserDocument, IUserModel } from './type';
 
 const jwtSecret = config('JWT_SECRET');
 
-const userSchema = new Schema<IUserDocument>(
+const schema = new Schema<IUserDocument>(
   {
-    firstname: {
-      type: String,
-    },
+    firstname: String,
     middlename: {
       type: String,
       default: '',
     },
-    lastname: {
-      type: String,
-    },
-    age: {
-      type: Number,
-    },
+    lastname: String,
+    age: Number,
     username: {
       type: String,
       unique: true,
@@ -29,33 +23,21 @@ const userSchema = new Schema<IUserDocument>(
       type: String,
       unique: true,
     },
-    password: {
-      type: String,
-    },
-    avatar: {
-      type: Buffer,
-    },
-    verificationToken: {
-      type: String,
-    },
-    authTokens: [
-      {
-        authToken: {
-          type: String,
-        },
-      },
-    ],
+    password: String,
+    avatar: Buffer,
+    verificationToken: String,
+    authTokens: [{ authToken: String }],
   },
   { timestamps: true }
 );
 
-userSchema.methods.toJSON = function (): Record<string, any> {
+schema.methods.toJSON = function (): Record<string, any> {
   const { _id, firstname, middlename, lastname, age, username, email } = this;
 
   return { _id, firstname, middlename, lastname, age, username, email };
 };
 
-userSchema.methods.getAuthToken = async function (): Promise<string> {
+schema.methods.getAuthToken = async function (): Promise<string> {
   const authToken = jwt.sign(
     {
       _id: this._id.toString(),
@@ -71,7 +53,7 @@ userSchema.methods.getAuthToken = async function (): Promise<string> {
   return authToken;
 };
 
-userSchema.methods.getVerificationToken = async function (): Promise<string> {
+schema.methods.getVerificationToken = async function (): Promise<string> {
   const token = jwt.sign(
     {
       _id: this._id.toString(),
@@ -87,7 +69,7 @@ userSchema.methods.getVerificationToken = async function (): Promise<string> {
   return token;
 };
 
-userSchema.statics.findByCredentials = async (
+schema.statics.findByCredentials = async (
   email: string,
   password: string
 ): Promise<IUserDocument> => {
@@ -107,7 +89,7 @@ userSchema.statics.findByCredentials = async (
   return user;
 };
 
-userSchema.statics.verifyUser = async (verificationToken): Promise<void> => {
+schema.statics.verifyUser = async (verificationToken): Promise<void> => {
   const { _id } = jwt.verify(verificationToken, jwtSecret);
 
   const user = await User.findOne({ _id, verificationToken });
@@ -121,12 +103,12 @@ userSchema.statics.verifyUser = async (verificationToken): Promise<void> => {
   await user.save();
 };
 
-userSchema.pre('save', async function (): Promise<void> {
+schema.pre('save', async function (): Promise<void> {
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 8);
   }
 });
 
-const User = model<IUser, IUserModel>('User', userSchema);
+const User = model<IUser, IUserModel>('User', schema);
 
 export default User;

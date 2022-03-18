@@ -20,24 +20,24 @@ class UserService {
     const user = await User.findById(id);
 
     if (!user) {
-      throw new Error('');
+      throw new Error();
     }
 
     return user;
   };
 
   updateUser = async (user: IUser, newData: Record<string, any>) => {
-    try {
-      const updatables = [
-        'firstname',
-        'middlename',
-        'lastname',
-        'age',
-        'username',
-        'email',
-        'password',
-      ];
+    const updatables = [
+      'firstname',
+      'middlename',
+      'lastname',
+      'age',
+      'username',
+      'email',
+      'password',
+    ];
 
+    try {
       updatables.forEach((key) => {
         if (newData[key] != undefined) {
           user[key] = newData[key];
@@ -54,7 +54,7 @@ class UserService {
     const user = await this.getUser(id);
 
     if (!user.verificationToken) {
-      throw new Error('');
+      throw new Error();
     }
 
     const verificationToken = await user.getVerificationToken();
@@ -119,7 +119,7 @@ Team App
 
   uploadAvatar = async (user: IUser, file: Express.Multer.File) => {
     if (!file) {
-      throw new Error('');
+      throw new Error();
     }
 
     const buffer = await sharp(file.buffer)
@@ -136,7 +136,7 @@ Team App
     const user = await this.getUser(id);
 
     if (!user.avatar) {
-      throw new Error('');
+      throw new Error();
     }
 
     return user.avatar;
@@ -144,7 +144,7 @@ Team App
 
   deleteAvatar = async (user: IUser) => {
     if (!user.avatar) {
-      throw new Error('');
+      throw new Error();
     }
 
     user.avatar = undefined;

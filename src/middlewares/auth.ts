@@ -22,7 +22,7 @@ export default async (
     });
 
     if (!currentUser) {
-      throw new Error('');
+      throw new Error();
     }
 
     req.currentUser = currentUser;

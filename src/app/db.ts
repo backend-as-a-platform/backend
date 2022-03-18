@@ -13,7 +13,7 @@ export default async (): Promise<void> => {
       useFindAndModify: false,
     });
 
-    console.log('MongoDB connected');
+    console.log('MongoDB is up and running.');
   } catch (err) {
     panic(`MongoDB error: ${err.message}`);
   }

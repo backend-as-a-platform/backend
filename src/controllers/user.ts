@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../models/user';
-import userService from '../services/user';
+import service from '../services/user';
 import config from '../app/config';
 
 /** Route controller responsible for service invocation. */
@@ -11,7 +11,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const user = await userService.getUser(params.id);
+      const user = await service.getUser(params.id);
 
       res.send(user);
     } catch (err) {
@@ -25,7 +25,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const user = await userService.createUser({
+      const user = await service.createUser({
         ...body,
         verificationToken: 'null',
       });
@@ -43,7 +43,7 @@ class UserController {
   ): Promise<void> => {
     try {
       const { email, password } = body;
-      const { user, authToken } = await userService.loginUser(email, password);
+      const { user, authToken } = await service.loginUser(email, password);
 
       res.send({ user, authToken });
     } catch (err) {
@@ -76,11 +76,12 @@ class UserController {
       // For debugging only
       const isDevMode = config('NODE_ENV') === 'development';
 
-      const { user, verificationToken } =
-        await userService.getVerificationForUser(params.id);
+      const { user, verificationToken } = await service.getVerificationForUser(
+        params.id
+      );
 
       isDevMode ||
-        (await userService.sendWelcomeMail(
+        (await service.sendWelcomeMail(
           user.email,
           user.firstname,
           verificationToken
@@ -101,7 +102,7 @@ class UserController {
     next: NextFunction
   ) => {
     try {
-      await userService.logoutCurrentSession(currentUser, authToken);
+      await service.logoutCurrentSession(currentUser, authToken);
 
       res.send({ result: 'logged out from current session' });
     } catch (err) {
@@ -115,7 +116,7 @@ class UserController {
     next: NextFunction
   ) => {
     try {
-      await userService.logoutAllSessions(currentUser);
+      await service.logoutAllSessions(currentUser);
 
       res.send({ result: 'logged out from all sessions' });
     } catch (err) {
@@ -133,7 +134,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const newUser = await userService.updateUser(currentUser, body);
+      const newUser = await service.updateUser(currentUser, body);
 
       res.send(newUser);
     } catch (err) {
@@ -161,7 +162,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      await userService.uploadAvatar(currentUser, file);
+      await service.uploadAvatar(currentUser, file);
 
       res.send({ result: 'avatar updated' });
     } catch (err) {
@@ -175,7 +176,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const avatar = await userService.getAvatar(params.id);
+      const avatar = await service.getAvatar(params.id);
 
       res.set('Content-Type', 'image/png');
       res.send(avatar);
@@ -190,7 +191,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      await userService.deleteAvatar(currentUser);
+      await service.deleteAvatar(currentUser);
 
       res.send({ result: 'avatar removed' });
     } catch (err) {
