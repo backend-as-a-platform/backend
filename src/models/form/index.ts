@@ -3,7 +3,10 @@ import { IFormDocument } from './type';
 import Field from './field';
 
 const schema = new Schema<IFormDocument>({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
   description: String,
   fields: [Field.schema],
 });

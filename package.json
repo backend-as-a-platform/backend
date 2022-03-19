@@ -1,19 +1,19 @@
 {
-  "name": "api-starter",
+  "name": "baap-backend",
   "version": "1.0.0",
-  "main": "index.ts",
-  "repository": "https://github.com/arjunshibu/api-starter",
+  "main": "src/index.ts",
+  "repository": "https://github.com/arjunshibu/baap-backend",
   "author": "arjunshibu <arjunshibu1999@gmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "webpack",
     "lint": "eslint .",
-    "lint:test": "yarn lint && yarn test",
-    "build:start": "yarn build && yarn start",
     "test": "NODE_ENV=development jest",
+    "lint:test": "yarn lint && yarn test",
     "seed": "./scripts/seed.sh",
     "dev": "NODE_ENV=development yarn build",
-    "start": "NODE_ENV=production node dist/bundle.js"
+    "start": "NODE_ENV=production node dist/bundle.js",
+    "build:start": "yarn build && yarn start"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.4.4",

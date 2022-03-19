@@ -12,7 +12,6 @@ export default (): Router => {
    **/
   // user('/user', router);
   form('/forms', router);
-  /* 404 */
   fourOhFour('/', router);
 
   return router;

@@ -1,13 +1,17 @@
 import Form from '../models/form';
+import { fieldsToMongooseSchema } from '../helpers/parser';
 
 class FormService {
   createForm = async (data: Record<string, any>) => {
-    try {
-      return await new Form(data).save();
-    } catch (err) {
-      console.log(err);
-      return { error: 'check the console' };
-    }
+    const form = await new Form(data).save();
+    /**
+     * Schema for the form record.
+     * It can be used to create the curresponding model
+     * for managing CRUD for form record.
+     */
+    const recordSchema = fieldsToMongooseSchema(form.fields);
+
+    return form;
   };
 
   getForm = async (id: string) => {

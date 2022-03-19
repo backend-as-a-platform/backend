@@ -7,6 +7,7 @@ const errors = {
   404: 'not found',
   500: 'internal server error',
 };
+
 /** Sets error if request fails */
 const setError = (code: number, reason?: string): Record<string, any> => ({
   code,

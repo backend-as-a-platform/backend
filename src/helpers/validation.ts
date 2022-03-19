@@ -1,9 +1,9 @@
-// Helpers for Joi validation schema
+/** Helper for Joi validation schema */
 
 const patterns = {
   alpha: {
     regex: /^[a-zA-Z]*$/,
-    message: 'must only contain alphabet characters',
+    message: 'must only contain alphabets',
   },
   alphanum: {
     regex: /^[\w]*$/,

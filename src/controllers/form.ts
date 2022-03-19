@@ -56,6 +56,30 @@ class FormController {
       next({ status: 404 });
     }
   };
+
+  addRecord = async (
+    { body }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {};
+
+  getRecord = async (
+    { body }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {};
+
+  updateRecord = async (
+    { body }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {};
+
+  deleteRecord = async (
+    { body }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {};
 }
 
 export default new FormController();
