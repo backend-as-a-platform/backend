@@ -1,3 +1,5 @@
+import { Document, Schema } from 'mongoose';
+
 /**
  * Parser that takes an array of form fields
  * and converts to a Mongoose schema.
@@ -20,7 +22,6 @@
 const fieldsToMongooseSchema = (
   fields: Array<Record<string, any>>
 ): Record<string, any> => {
-  const schema: Record<string, any> = {};
   const fieldsToIgnore = ['paragraph', 'header'];
   const complexFields = [
     'checkbox-group',
@@ -28,31 +29,44 @@ const fieldsToMongooseSchema = (
     'select',
     'autocomplete',
   ];
+  const updatables = [];
+
+  let schema: Record<string, any> = {
+    form: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'Form',
+    },
+  };
 
   fields.forEach((field) => {
     if (!fieldsToIgnore.includes(field.type)) {
+      updatables.push(field.name);
+
       schema[field.name] = {
-        type: 'String',
+        type: String,
         required: field.required,
       };
     }
 
-    if (field.type == 'number') {
-      schema[field.name].type = 'Number';
+    if (field.type === 'number') {
+      schema[field.name].type = Number;
     } else if (field.type === 'file') {
-      schema[field.name].type = 'Buffer';
+      schema[field.name].type = Buffer;
     } else if (complexFields.includes(field.type)) {
       schema[field.name].type = [
         {
-          name: 'String',
-          value: 'String',
-          selcted: 'Boolean',
+          name: String,
+          value: String,
+          selected: Boolean,
         },
       ];
     }
   });
 
-  return schema;
+  schema = new Schema<Document>(schema);
+
+  return { schema, updatables };
 };
 
 export { fieldsToMongooseSchema };

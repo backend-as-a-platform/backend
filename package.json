@@ -2,7 +2,7 @@
   "name": "baap-backend",
   "version": "1.0.0",
   "main": "src/index.ts",
-  "repository": "https://github.com/arjunshibu/baap-backend",
+  "repository": "https://github.com/backend-as-a-platform/backend",
   "author": "arjunshibu <arjunshibu1999@gmail.com>",
   "license": "MIT",
   "scripts": {

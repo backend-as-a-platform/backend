@@ -12,8 +12,8 @@ export default (path: string, apiRouter: Router): void => {
   route.delete('/:id', controller.deleteForm);
 
   /** CRUD for form record (entry) */
-  route.post('/:id/record/new', controller.addRecord);
-  route.get('/:id/record/:recordId', controller.getRecord);
-  route.put('/:id/record/:recordId', controller.updateRecord);
-  route.delete('/:id/record/:recordId', controller.deleteRecord);
+  route.post('/:id/records/new', controller.createRecord);
+  route.get('/:id/records/:recordId', controller.getRecord);
+  route.put('/:id/records/:recordId', controller.updateRecord);
+  route.delete('/:id/records/:recordId', controller.deleteRecord);
 };

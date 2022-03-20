@@ -57,29 +57,69 @@ class FormController {
     }
   };
 
-  addRecord = async (
-    { body }: Request,
+  createRecord = async (
+    { params, body }: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> => {};
+  ): Promise<void> => {
+    try {
+      const { id } = params;
+
+      res.send(await service.createRecord(id, body));
+    } catch (err) {
+      if (err instanceof TypeError) {
+        next({ status: 404 });
+      } else {
+        next({ status: 400 });
+      }
+    }
+  };
 
   getRecord = async (
-    { body }: Request,
+    { params }: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> => {};
+  ): Promise<void> => {
+    try {
+      const { id, recordId } = params;
+
+      res.send(await service.getRecord(recordId, id));
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
 
   updateRecord = async (
-    { body }: Request,
+    { params, body }: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> => {};
+  ): Promise<void> => {
+    try {
+      const { id, recordId } = params;
+
+      res.send(await service.updateRecord(recordId, id, body));
+    } catch (err) {
+      if (err instanceof Error || err instanceof TypeError) {
+        next({ status: 404 });
+      } else {
+        next({ status: 400 });
+      }
+    }
+  };
 
   deleteRecord = async (
-    { body }: Request,
+    { params }: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> => {};
+  ): Promise<void> => {
+    try {
+      const { id, recordId } = params;
+
+      res.send(await service.deleteRecord(recordId, id));
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
 }
 
 export default new FormController();
