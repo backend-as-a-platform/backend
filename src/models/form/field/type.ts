@@ -1,6 +1,6 @@
-import { LeanDocument } from 'mongoose';
+import { Document, LeanDocument } from 'mongoose';
 
-interface IFieldDocument {
+interface IFieldDocument extends Document {
   type: string;
   subtype: string;
   label: string;

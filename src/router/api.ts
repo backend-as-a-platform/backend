@@ -9,8 +9,8 @@ export default (): Router => {
 
   /** Top-level route definitions
    *  Express Router needs to be injected as dependency
-   **/
-  // user('/user', router);
+   */
+  user('/users', router);
   form('/forms', router);
   fourOhFour('/', router);
 

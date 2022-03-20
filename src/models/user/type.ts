@@ -1,7 +1,7 @@
-import { Model, LeanDocument } from 'mongoose';
+import { Model, Document, LeanDocument } from 'mongoose';
 
 // Properties
-interface IUserDocument {
+interface IUserDocument extends Document {
   firstname: string;
   middlename: string;
   lastname: string;

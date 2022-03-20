@@ -30,7 +30,7 @@ class UserController {
         verificationToken: 'null',
       });
 
-      res.redirect(`/user/${user._id}/send-verification`);
+      res.redirect(`/users/${user._id}/send-verification`);
     } catch (err) {
       next({ status: 400, reason: err.message });
     }
