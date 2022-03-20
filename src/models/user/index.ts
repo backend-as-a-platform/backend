@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
-import * as jwt from 'jsonwebtoken';
-import * as bcrypt from 'bcryptjs';
+import { sign, verify, JwtPayload } from 'jsonwebtoken';
+import { compare, hash } from 'bcryptjs';
 import config from '../../app/config';
 import { IUser, IUserDocument, IUserModel } from './type';
 
@@ -38,7 +38,7 @@ schema.methods.toJSON = function (): Record<string, any> {
 };
 
 schema.methods.getAuthToken = async function (): Promise<string> {
-  const authToken = jwt.sign(
+  const authToken = sign(
     {
       _id: this._id.toString(),
     },
@@ -54,7 +54,7 @@ schema.methods.getAuthToken = async function (): Promise<string> {
 };
 
 schema.methods.getVerificationToken = async function (): Promise<string> {
-  const token = jwt.sign(
+  const token = sign(
     {
       _id: this._id.toString(),
     },
@@ -80,7 +80,7 @@ schema.statics.findByCredentials = async (
     throw err;
   }
 
-  const isValidPassword = await bcrypt.compare(password, user.password);
+  const isValidPassword = await compare(password, user.password);
 
   if (!isValidPassword) {
     throw err;
@@ -90,7 +90,7 @@ schema.statics.findByCredentials = async (
 };
 
 schema.statics.verifyUser = async (verificationToken): Promise<void> => {
-  const { _id } = jwt.verify(verificationToken, jwtSecret);
+  const { _id } = verify(verificationToken, jwtSecret) as JwtPayload;
 
   const user = await User.findOne({ _id, verificationToken });
 
@@ -105,7 +105,7 @@ schema.statics.verifyUser = async (verificationToken): Promise<void> => {
 
 schema.pre('save', async function (): Promise<void> {
   if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 8);
+    this.password = await hash(this.password, 8);
   }
 });
 

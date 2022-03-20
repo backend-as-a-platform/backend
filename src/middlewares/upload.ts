@@ -1,6 +1,6 @@
 import * as multer from 'multer';
 
-/** Returns middleware that allows uploading avatars. */
+/** Returns middleware for uploading avatars. */
 const avatar = multer({
   limits: { fileSize: 5000000 },
   fileFilter(_, file, callback) {

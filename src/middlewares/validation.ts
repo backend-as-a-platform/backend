@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import schema from '../models/user/validation';
 
-/** Sets whether current operation is creation or updation
- *  Needed for validation
+/** Sets whether current operation is creation or updation.
+ *  It's needed for validation.
  **/
 const prevalidate = (
   { body, method }: Request,

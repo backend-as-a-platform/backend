@@ -24,4 +24,5 @@ const options = {
     },
   },
 };
+
 export { patterns, options };
