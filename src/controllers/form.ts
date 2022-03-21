@@ -100,6 +100,8 @@ class FormController {
       res.send(await service.updateRecord(recordId, id, body));
     } catch (err) {
       if (err instanceof Error || err instanceof TypeError) {
+        // when validation fails, 404 is thrown,
+        // need to fix this.
         next({ status: 404 });
       } else {
         next({ status: 400 });

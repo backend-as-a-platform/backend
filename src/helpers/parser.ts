@@ -54,13 +54,11 @@ const fieldsToMongooseSchema = (
     } else if (field.type === 'file') {
       schema[field.name].type = Buffer;
     } else if (complexFields.includes(field.type)) {
-      schema[field.name].type = [
-        {
-          name: String,
-          value: String,
-          selected: Boolean,
-        },
-      ];
+      schema[field.name].enum = [];
+
+      field.values.forEach(({ value }: Record<string, any>) => {
+        schema[field.name].enum.push(value);
+      });
     }
   });
 
