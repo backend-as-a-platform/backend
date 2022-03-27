@@ -13,9 +13,9 @@ export default async (): Promise<void> => {
       useFindAndModify: false,
     });
 
-    console.log('MongoDB is up and running.');
+    console.log('MongoDB [ok] - connection successful');
   } catch (err) {
-    panic(`MongoDB error: ${err.message}`);
+    panic(`MongoDB [error] - ${err.message}`);
   }
 };
 

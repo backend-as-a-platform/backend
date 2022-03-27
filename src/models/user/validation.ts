@@ -3,7 +3,7 @@ import { patterns, options } from '../../helpers/validation';
 
 /** Validation schema for User model */
 export default Joi.object({
-  // If current operation is creation or updation
+  // Is current operation creation or updation?
   creationMode: Joi.bool().required(),
   firstname: Joi.string()
     .pattern(patterns.alpha.regex)

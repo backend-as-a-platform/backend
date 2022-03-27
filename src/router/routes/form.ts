@@ -1,14 +1,16 @@
 import { Router } from 'express';
 import router from './';
 import controller from '../../controllers/form';
+import { prevalidate, validateForm } from '../../middlewares/validation';
 
 export default (path: string, apiRouter: Router): void => {
   const route = router(path, apiRouter);
 
   /** CRUD for form schema */
-  route.post('/new', controller.createForm);
+  route.post('/new', prevalidate, validateForm, controller.createForm);
+  route.put('/:id', prevalidate, validateForm, controller.updateForm);
   route.get('/:id', controller.getForm);
-  route.put('/:id', controller.updateForm);
+  route.get('/', controller.getForms);
   route.delete('/:id', controller.deleteForm);
 
   /** CRUD for form record (entry) */

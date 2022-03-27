@@ -89,7 +89,9 @@ class UserController {
 
       res.send({
         result: `verification link has been sent to ${user.email}`,
-        debug: isDevMode ? verificationToken : undefined,
+        debug: isDevMode
+          ? `${config('HOSTNAME')}/users/verify/${verificationToken}`
+          : undefined,
       });
     } catch (err) {
       next({ status: 404 });

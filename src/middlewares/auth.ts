@@ -32,6 +32,6 @@ export default async (
 
     next();
   } catch (err) {
-    next({ status: 400, reason: 'authentication failed' });
+    next({ status: 400, reason: 'authorization failure' });
   }
 };

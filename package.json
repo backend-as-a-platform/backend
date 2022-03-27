@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "repository": "https://github.com/backend-as-a-platform/backend",
-  "author": "arjunshibu <arjunshibu1999@gmail.com>",
   "license": "MIT",
+  "maintainers": [
+    "Arjun Shibu <arjunshibu1999@gmail.com>",
+    "Noble Mathew <noblemathew17@gmail.com>",
+    "Stefhina George <stefhina67@gmail.com>",
+    "Anitta Mary Thomas <anitta021997@gmail.com>"
+  ],
   "scripts": {
     "build": "webpack",
     "lint": "eslint .",
@@ -17,7 +22,9 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^7.4.4",
+    "@types/cors": "^2.8.12",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "joi": "^17.4.0",

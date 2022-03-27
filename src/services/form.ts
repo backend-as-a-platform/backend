@@ -1,26 +1,31 @@
 import { model } from 'mongoose';
 import Form from '../models/form';
 import { fieldsToMongooseSchema } from '../helpers/parser';
+import { throwDuplicate } from '../helpers/error';
 
 class FormService {
   private models = {};
   private updatables = [];
 
   createForm = async (data: Record<string, any>) => {
-    const form = await new Form(data).save();
-    /**
-     * Schema for the form record.
-     * It can be used to create the curresponding model
-     * for managing CRUD for the form record.
-     */
-    const { schema, updatables } = fieldsToMongooseSchema(form.fields);
+    try {
+      const form = await new Form(data).save();
+      /**
+       * Schema for the form record.
+       * It can be used to create the curresponding model
+       * for managing CRUD for the form record.
+       */
+      const { schema, updatables } = fieldsToMongooseSchema(form.fields);
 
-    const id = form._id.toString();
+      const id = form._id.toString();
 
-    this.models[id] = model(`record-${id}`, schema);
-    this.updatables = updatables;
+      this.models[id] = model(`record-${id}`, schema);
+      this.updatables = updatables;
 
-    return form;
+      return form;
+    } catch (err) {
+      throwDuplicate(err);
+    }
   };
 
   getForm = async (id: string) => {
@@ -33,18 +38,29 @@ class FormService {
     return form;
   };
 
+  getForms = async () => {
+    return await Form.find();
+  };
+
   updateForm = async (id: string, newData: Record<string, any>) => {
     const updatables = ['name', 'description', 'fields'];
+    try {
+      const form = await Form.findById(id);
 
-    const form = await Form.findById(id);
+      updatables.forEach((key) => {
+        if (newData[key] != undefined) {
+          form[key] = newData[key];
+        }
+      });
 
-    updatables.forEach((key) => {
-      if (newData[key] != undefined) {
-        form[key] = newData[key];
+      return await form.save();
+    } catch (err) {
+      if (err.code === 11000) {
+        throwDuplicate(err);
+      } else {
+        throw new Error();
       }
-    });
-
-    return await form.save();
+    }
   };
 
   deleteForm = async (id: string) => {

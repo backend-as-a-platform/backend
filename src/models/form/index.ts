@@ -5,7 +5,7 @@ import Field from './field';
 const schema = new Schema<IFormDocument>({
   name: {
     type: String,
-    required: true,
+    unique: true,
   },
   description: String,
   fields: [Field.schema],

@@ -12,7 +12,7 @@ class FormController {
 
       res.send(await service.createForm({ name, description, fields }));
     } catch (err) {
-      next({ status: 400 });
+      next({ status: 400, reason: err.message });
     }
   };
 
@@ -28,6 +28,18 @@ class FormController {
     }
   };
 
+  getForms = async (
+    _: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      res.send(await service.getForms());
+    } catch (err) {
+      next({ status: 500 });
+    }
+  };
+
   updateForm = async (
     { params, body }: Request,
     res: Response,
@@ -39,7 +51,10 @@ class FormController {
 
       res.send(await service.updateForm(id, { name, description, fields }));
     } catch (err) {
-      next({ status: 404 });
+      next({
+        status: err.code === 11000 ? 400 : 404,
+        reason: err.message || undefined,
+      });
     }
   };
 

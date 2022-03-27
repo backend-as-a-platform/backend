@@ -1,15 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
-import schema from '../models/user/validation';
+import userSchema from '../models/user/validation';
+import formSchema from '../models/form/validation';
 
-/** Sets whether current operation is creation or updation.
- *  It's needed for validation.
+/** Sets whether the current operation is creation or updation.
+ *  It's required for validating Joi schema.
  **/
 const prevalidate = (
   { body, method }: Request,
   _: Response,
   next: NextFunction
 ): void => {
-  body.creationMode = method === 'POST' ? true : false;
+  body.creationMode = method === 'POST';
   next();
 };
 
@@ -19,11 +20,24 @@ const validateUser = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    await schema.validateAsync(body, { allowUnknown: true });
+    await userSchema.validateAsync(body, { allowUnknown: true });
     next();
   } catch (err) {
     next({ status: 400, reason: err.message });
   }
 };
 
-export { prevalidate, validateUser };
+const validateForm = async (
+  { body }: Request,
+  _: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    await formSchema.validateAsync(body, { allowUnknown: true });
+    next();
+  } catch (err) {
+    next({ status: 400, reason: err.message });
+  }
+};
+
+export { prevalidate, validateUser, validateForm };
