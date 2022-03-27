@@ -18,7 +18,7 @@ const setError = (code: number, reason?: string): Record<string, any> => ({
 /** Throws user-friendly error
  *  for MongoDB duplicate index (code: E11000)
  **/
-const throwDuplicate = (err: any): Error => {
+const throwDuplicate = (err: Record<string, any>): Error => {
   const key = err.message.split('_1')[0].split(': ')[2];
 
   throw { code: err.code, message: `'${key}' is already taken` };
