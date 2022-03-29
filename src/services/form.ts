@@ -1,13 +1,14 @@
 import { model } from 'mongoose';
 import Form from '../models/form';
-import { fieldsToMongooseSchema } from '../helpers/parser';
-import { throwDuplicate } from '../helpers/error';
+import { fieldsToMongooseSchema } from '../lib/parser';
+import { throwDuplicate } from '../lib/error';
+import { IFormDocument } from '../models/form/type';
 
 class FormService {
   private models = {};
   private updatables = [];
 
-  createForm = async (data: Record<string, any>) => {
+  createForm = async (data: Record<string, any>): Promise<IFormDocument> => {
     try {
       const form = await new Form(data).save();
       /**
@@ -28,7 +29,7 @@ class FormService {
     }
   };
 
-  getForm = async (id: string) => {
+  getForm = async (id: string): Promise<IFormDocument> => {
     const form = await Form.findById(id);
 
     if (!form) {
@@ -38,11 +39,14 @@ class FormService {
     return form;
   };
 
-  getForms = async () => {
+  getForms = async (): Promise<IFormDocument[]> => {
     return await Form.find();
   };
 
-  updateForm = async (id: string, newData: Record<string, any>) => {
+  updateForm = async (
+    id: string,
+    newData: Record<string, any>
+  ): Promise<IFormDocument> => {
     const updatables = ['name', 'description', 'fields'];
     try {
       const form = await Form.findById(id);
@@ -63,7 +67,7 @@ class FormService {
     }
   };
 
-  deleteForm = async (id: string) => {
+  deleteForm = async (id: string): Promise<IFormDocument> => {
     const user = await Form.findOneAndDelete({ _id: id });
 
     if (!user) {
@@ -73,7 +77,10 @@ class FormService {
     return user;
   };
 
-  createRecord = async (formId: string, data: Record<string, any>) => {
+  createRecord = async (
+    formId: string,
+    data: Record<string, any>
+  ): Promise<Record<string, any>> => {
     const Record = this.models[formId];
 
     return await new Record({
@@ -82,7 +89,10 @@ class FormService {
     }).save();
   };
 
-  getRecord = async (recordId: string, formId: string) => {
+  getRecord = async (
+    recordId: string,
+    formId: string
+  ): Promise<Record<string, any>> => {
     const Record = this.models[formId];
     const record = await Record.findOne({ _id: recordId, form: formId });
 
@@ -93,11 +103,17 @@ class FormService {
     return record;
   };
 
+  getRecords = async (formId: string): Promise<Record<string, any>[]> => {
+    const Record = this.models[formId];
+
+    return await Record.find();
+  };
+
   updateRecord = async (
     recordId: string,
     formId: string,
     newData: Record<string, any>
-  ) => {
+  ): Promise<Record<string, any>> => {
     const Record = this.models[formId];
     const record = await Record.findOne({
       _id: recordId,
@@ -117,7 +133,10 @@ class FormService {
     return await record.save();
   };
 
-  deleteRecord = async (recordId: string, formId: string) => {
+  deleteRecord = async (
+    recordId: string,
+    formId: string
+  ): Promise<Record<string, any>> => {
     const Record = this.models[formId];
     const record = await Record.findOneAndDelete({
       _id: recordId,

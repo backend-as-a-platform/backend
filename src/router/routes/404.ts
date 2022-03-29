@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import router from '.';
-import { setError } from '../../helpers/error';
+import { setError } from '../../lib/error';
 
 /** Sends 404 for invalid route requests
  *  Works with every HTTP methods

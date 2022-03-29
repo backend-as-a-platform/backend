@@ -1,7 +1,7 @@
 import app from './app';
 import config from './app/config';
 import connect from './app/db';
-import { panic } from './helpers/error';
+import { panic } from './lib/error';
 
 const port = config('PORT');
 const host = config('HOSTNAME');

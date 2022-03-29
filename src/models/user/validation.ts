@@ -1,5 +1,5 @@
 import * as Joi from 'joi';
-import { patterns, options } from '../../helpers/validation';
+import { patterns, options } from '../../lib/validation';
 
 /** Validation schema for User model */
 export default Joi.object({

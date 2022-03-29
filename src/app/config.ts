@@ -1,6 +1,6 @@
 import { join, resolve } from 'path';
 import * as dotenv from 'dotenv';
-import { panic } from '../helpers/error';
+import { panic } from '../lib/error';
 
 const config = (key: string): string => process.env[key];
 

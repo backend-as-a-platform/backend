@@ -2,14 +2,17 @@ import { model, Schema } from 'mongoose';
 import { IFormDocument } from './type';
 import Field from './field';
 
-const schema = new Schema<IFormDocument>({
-  name: {
-    type: String,
-    unique: true,
+const schema = new Schema<IFormDocument>(
+  {
+    name: {
+      type: String,
+      unique: true,
+    },
+    description: String,
+    fields: [Field.schema],
   },
-  description: String,
-  fields: [Field.schema],
-});
+  { timestamps: true }
+);
 
 const Form = model('Form', schema);
 

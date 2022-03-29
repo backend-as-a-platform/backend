@@ -5,7 +5,7 @@ import * as sharp from 'sharp';
 import config from '../app/config';
 import User from '../models/user';
 import { IUser } from '../models/user/type';
-import { throwDuplicate } from '../helpers/error';
+import { throwDuplicate } from '../lib/error';
 
 class UserService {
   createUser = async (data: Document) => {

@@ -62,7 +62,7 @@ const fieldsToMongooseSchema = (
     }
   });
 
-  schema = new Schema<Document>(schema);
+  schema = new Schema<Document>(schema, { timestamps: true });
 
   return { schema, updatables };
 };

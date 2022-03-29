@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { MulterError } from 'multer';
-import { setError } from '../helpers/error';
+import { setError } from '../lib/error';
 
 /** Returns API error middleware
  *  that sends response with status code and reason if any.

@@ -1,6 +1,6 @@
 import { connect, connection } from 'mongoose';
 import config from './config';
-import { panic } from '../helpers/error';
+import { panic } from '../lib/error';
 
 const mongoDbUri = config('MONGODB_URI');
 

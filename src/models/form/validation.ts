@@ -1,5 +1,5 @@
 import * as Joi from 'joi';
-import { patterns, options } from '../../helpers/validation';
+import { patterns, options } from '../../lib/validation';
 
 export default Joi.object({
   creationMode: Joi.bool().required(),

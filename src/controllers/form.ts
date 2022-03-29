@@ -104,6 +104,20 @@ class FormController {
     }
   };
 
+  getRecords = async (
+    { params }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { id } = params;
+
+      res.send(await service.getRecords(id));
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
+
   updateRecord = async (
     { params, body }: Request,
     res: Response,
