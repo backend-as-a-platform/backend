@@ -56,6 +56,10 @@ const fieldsToMongooseSchema = (
     } else if (complexFields.includes(field.type)) {
       schema[field.name].enum = [];
 
+      if (!schema[field.name].required) {
+        schema[field.name].enum.push('');
+      }
+
       field.values.forEach(({ value }: Record<string, any>) => {
         schema[field.name].enum.push(value);
       });
