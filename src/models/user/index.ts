@@ -31,6 +31,8 @@ schema.methods.getAuthToken = async function (): Promise<string> {
   const authToken = sign(
     {
       _id: this._id.toString(),
+      name: this.name,
+      email: this.email,
     },
     jwtSecret,
     { expiresIn: '1w' }
