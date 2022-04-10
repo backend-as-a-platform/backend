@@ -2,10 +2,7 @@ import { Model, Document, LeanDocument } from 'mongoose';
 
 // Properties
 interface IUserDocument extends Document {
-  firstname: string;
-  middlename: string;
-  lastname: string;
-  username: string;
+  name: string;
   email: string;
   password: string;
   age: number;

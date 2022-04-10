@@ -8,17 +8,7 @@ const jwtSecret = config('JWT_SECRET');
 
 const schema = new Schema<IUserDocument>(
   {
-    firstname: String,
-    middlename: {
-      type: String,
-      default: '',
-    },
-    lastname: String,
-    age: Number,
-    username: {
-      type: String,
-      unique: true,
-    },
+    name: String,
     email: {
       type: String,
       unique: true,
@@ -32,9 +22,9 @@ const schema = new Schema<IUserDocument>(
 );
 
 schema.methods.toJSON = function (): Record<string, any> {
-  const { _id, firstname, middlename, lastname, age, username, email } = this;
+  const { _id, name, email } = this;
 
-  return { _id, firstname, middlename, lastname, age, username, email };
+  return { _id, name, email };
 };
 
 schema.methods.getAuthToken = async function (): Promise<string> {

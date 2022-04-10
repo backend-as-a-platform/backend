@@ -5,29 +5,14 @@ import { patterns, options } from '../../lib/validation';
 export default Joi.object({
   // Is current operation creation or updation?
   creationMode: Joi.bool().required(),
-  firstname: Joi.string()
-    .pattern(patterns.alpha.regex)
+  name: Joi.string()
+    .pattern(patterns.name.regex)
     .messages({
-      'string.pattern.base': `'firstname' ${patterns.alpha.message}`,
+      'string.pattern.base': `'name' ${patterns.name.message}`,
     }),
-  middlename: Joi.string()
-    .pattern(patterns.alpha.regex)
-    .allow('')
-    .messages({
-      'string.pattern.base': `'middlename' ${patterns.alpha.message}`,
-    }),
-  lastname: Joi.string()
-    .pattern(patterns.alpha.regex)
-    .messages({
-      'string.pattern.base': `'lastname' ${patterns.alpha.message}`,
-    }),
-  age: Joi.number(),
-  username: Joi.string()
-    .pattern(patterns.alphanum.regex)
-    .messages({
-      'string.pattern.base': `'username' ${patterns.alphanum.message}`,
-    }),
-  email: Joi.string().email(),
+  email: Joi.string()
+    .email()
+    .messages({ 'string.email': `'email' ${patterns.email.message}` }),
   password: Joi.string()
     .pattern(patterns.password.regex)
     .min(8)
@@ -37,9 +22,7 @@ export default Joi.object({
 })
   .when(Joi.object({ creationMode: true }), {
     then: Joi.object({
-      firstname: Joi.required(),
-      lastname: Joi.required(),
-      username: Joi.required(),
+      name: Joi.required(),
       email: Joi.required(),
       password: Joi.required(),
     }),
