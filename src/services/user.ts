@@ -77,10 +77,10 @@ class UserService {
       from,
       to,
       subject: 'Thanks for joining',
-      text: `Welcome to App, ${name}.
+      text: `Welcome to BaaP, ${name}.
 
 Please verify your profile by following this link:
-${hostname}/user/verify/${verificationToken}
+${hostname}/users/verify/${verificationToken}
       
 Link is valid only for one hour.
 
