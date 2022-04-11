@@ -83,7 +83,7 @@ class UserController {
       isDevMode ||
         (await service.sendWelcomeMail(
           user.email,
-          user.firstname,
+          user.name,
           verificationToken
         ));
 

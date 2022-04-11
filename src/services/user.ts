@@ -84,7 +84,7 @@ ${hostname}/users/verify/${verificationToken}
       
 Link is valid only for one hour.
 
-Team App
+Team BaaP
       `,
     };
 
