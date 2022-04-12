@@ -12,6 +12,7 @@ class UserService {
     try {
       return await new User(data).save();
     } catch (err) {
+      console.log(err);
       throwDuplicate(err);
     }
   };
@@ -27,15 +28,7 @@ class UserService {
   };
 
   updateUser = async (user: IUser, newData: Record<string, any>) => {
-    const updatables = [
-      'firstname',
-      'middlename',
-      'lastname',
-      'age',
-      'username',
-      'email',
-      'password',
-    ];
+    const updatables = ['name', 'email', 'password'];
 
     try {
       updatables.forEach((key) => {

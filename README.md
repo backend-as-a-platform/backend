@@ -27,13 +27,13 @@ Run code quality checks
 Routes
 
 ```
-01. POST /users/signup - firstname, middlename, lastname, age, username, email, password
+01. POST /users/signup - name, email, password
 02. POST /users/login - email, password
 03. GET /users/verify/:verification-token
 04. GET /users/logout
 05. GET /users/logout/all
 06. GET /users/profile
-07. PUT /users/profile - firstname, middlename, lastname, age, username, email, password
+07. PUT /users/profile - name, email, password
 08. DELETE /users/profile
 09. POST /users/profile/avatar (multipart-form data - avatar)
 10. DELETE /users/profile/avatar
