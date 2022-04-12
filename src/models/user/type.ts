@@ -5,7 +5,6 @@ interface IUserDocument extends Document {
   name: string;
   email: string;
   password: string;
-  age: number;
   avatar: Buffer;
   verificationToken: string;
   authTokens: Array<Record<string, any>>;
