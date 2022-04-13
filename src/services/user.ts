@@ -87,7 +87,7 @@ Team BaaP
     const user = await User.findByCredentials(email, password);
 
     if (user.verificationToken) {
-      throw new Error('user is not verified');
+      throw new Error('email is not verified');
     }
 
     const authToken = await user.getAuthToken();
