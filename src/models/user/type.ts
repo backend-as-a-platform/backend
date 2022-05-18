@@ -1,4 +1,4 @@
-import { Model, Document, LeanDocument } from 'mongoose';
+import { Model, Document, LeanDocument, ObjectId } from 'mongoose';
 
 // Properties
 interface IUserDocument extends Document {
@@ -8,6 +8,7 @@ interface IUserDocument extends Document {
   avatar: Buffer;
   verificationToken: string;
   authTokens: Array<Record<string, any>>;
+  projects: Array<ObjectId>;
 }
 
 // Methods

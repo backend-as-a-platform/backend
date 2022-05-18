@@ -1,8 +1,8 @@
 import { model } from 'mongoose';
 import Form from '../models/form';
+import { IFormDocument } from '../models/form/type';
 import { fieldsToMongooseSchema } from '../lib/parser';
 import { throwDuplicate } from '../lib/error';
-import { IFormDocument } from '../models/form/type';
 
 class FormService {
   private models = {};
@@ -68,13 +68,13 @@ class FormService {
   };
 
   deleteForm = async (id: string): Promise<IFormDocument> => {
-    const user = await Form.findOneAndDelete({ _id: id });
+    const form = await Form.findOneAndDelete({ _id: id });
 
-    if (!user) {
+    if (!form) {
       throw new Error();
     }
 
-    return user;
+    return form;
   };
 
   createRecord = async (

@@ -1,4 +1,3 @@
-import { Document } from 'mongoose';
 import { Express } from 'express';
 import * as mail from '@sendgrid/mail';
 import * as sharp from 'sharp';
@@ -8,7 +7,7 @@ import { IUser } from '../models/user/type';
 import { throwDuplicate } from '../lib/error';
 
 class UserService {
-  createUser = async (data: Document) => {
+  createUser = async (data: Record<string, any>): Promise<IUser> => {
     try {
       return await new User(data).save();
     } catch (err) {
@@ -16,7 +15,7 @@ class UserService {
     }
   };
 
-  getUser = async (id: string) => {
+  getUser = async (id: string): Promise<IUser> => {
     const user = await User.findById(id);
 
     if (!user) {
@@ -26,7 +25,10 @@ class UserService {
     return user;
   };
 
-  updateUser = async (user: IUser, newData: Record<string, any>) => {
+  updateUser = async (
+    user: IUser,
+    newData: Record<string, any>
+  ): Promise<IUser> => {
     const updatables = ['name', 'email', 'password'];
 
     try {
@@ -42,7 +44,7 @@ class UserService {
     }
   };
 
-  getVerificationForUser = async (id: string) => {
+  getVerificationForUser = async (id: string): Promise<Record<string, any>> => {
     const user = await this.getUser(id);
 
     if (!user.verificationToken) {
@@ -58,7 +60,7 @@ class UserService {
     to: string,
     name: string,
     verificationToken: string
-  ) => {
+  ): Promise<void> => {
     const key = config('SENDGRID_API_KEY');
     const from = config('SENDGRID_VERIFIED_EMAIL');
     const hostname = config('HOSTNAME');
@@ -83,7 +85,10 @@ Team BaaP
     await mail.send(msg);
   };
 
-  loginUser = async (email: string, password: string) => {
+  loginUser = async (
+    email: string,
+    password: string
+  ): Promise<Record<string, any>> => {
     const user = await User.findByCredentials(email, password);
 
     if (user.verificationToken) {
@@ -95,7 +100,10 @@ Team BaaP
     return { user, authToken };
   };
 
-  logoutCurrentSession = async (user: IUser, authToken: string) => {
+  logoutCurrentSession = async (
+    user: IUser,
+    authToken: string
+  ): Promise<void> => {
     user.authTokens = user.authTokens.filter(
       (token: Record<string, any>) => token.authToken !== authToken
     );
@@ -103,13 +111,16 @@ Team BaaP
     await user.save();
   };
 
-  logoutAllSessions = async (user: IUser) => {
+  logoutAllSessions = async (user: IUser): Promise<void> => {
     user.authTokens = [];
 
     await user.save();
   };
 
-  uploadAvatar = async (user: IUser, file: Express.Multer.File) => {
+  uploadAvatar = async (
+    user: IUser,
+    file: Express.Multer.File
+  ): Promise<void> => {
     if (!file) {
       throw new Error();
     }
@@ -124,7 +135,7 @@ Team BaaP
     await user.save();
   };
 
-  getAvatar = async (id: string) => {
+  getAvatar = async (id: string): Promise<Buffer> => {
     const user = await this.getUser(id);
 
     if (!user.avatar) {
@@ -134,7 +145,7 @@ Team BaaP
     return user.avatar;
   };
 
-  deleteAvatar = async (user: IUser) => {
+  deleteAvatar = async (user: IUser): Promise<void> => {
     if (!user.avatar) {
       throw new Error();
     }

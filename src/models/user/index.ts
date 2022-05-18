@@ -6,20 +6,23 @@ import { IUser, IUserDocument, IUserModel } from './type';
 
 const jwtSecret = config('JWT_SECRET');
 
-const schema = new Schema<IUserDocument>(
-  {
-    name: String,
-    email: {
-      type: String,
-      unique: true,
-    },
-    password: String,
-    avatar: Buffer,
-    verificationToken: String,
-    authTokens: [{ authToken: String }],
+const schema = new Schema<IUserDocument>({
+  name: String,
+  email: {
+    type: String,
+    unique: true,
   },
-  { timestamps: true }
-);
+  password: String,
+  avatar: Buffer,
+  verificationToken: String,
+  authTokens: [{ authToken: String }],
+});
+
+schema.virtual('projects', {
+  ref: 'Project',
+  localField: '_id',
+  foreignField: 'owner',
+});
 
 schema.methods.toJSON = function (): Record<string, any> {
   const { _id, name, email } = this;
