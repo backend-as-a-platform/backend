@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import User from '../models/user';
 import service from '../services/user';
+import User from '../models/user';
 import config from '../app/config';
 
 /** Route controller responsible for service invocation. */

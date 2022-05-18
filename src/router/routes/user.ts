@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import router from '.';
+import router from './';
 import auth from '../../middlewares/auth';
 import controller from '../../controllers/user';
 import { avatar } from '../../middlewares/upload';

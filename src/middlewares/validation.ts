@@ -27,6 +27,8 @@ const validateUser = async (
   }
 };
 
+// Can be used to validate Project also as
+// both require only 'name' field to be checked
 const validateForm = async (
   { body }: Request,
   _: Response,
