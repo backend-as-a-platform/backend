@@ -19,6 +19,12 @@ schema.virtual('forms', {
   foreignField: 'project',
 });
 
+schema.methods.toJSON = function (): Record<string, any> {
+  const { _id, name, description } = this;
+
+  return { _id, name, description };
+};
+
 const Project = model('Project', schema);
 
 export default Project;

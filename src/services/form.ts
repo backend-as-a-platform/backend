@@ -29,8 +29,11 @@ class FormService {
     }
   };
 
-  getForm = async (id: string): Promise<IFormDocument> => {
-    const form = await Form.findById(id);
+  getForm = async (
+    projectId: string,
+    formId: string
+  ): Promise<IFormDocument> => {
+    const form = await Form.findOne({ project: projectId, _id: formId });
 
     if (!form) {
       throw new Error();
@@ -39,17 +42,18 @@ class FormService {
     return form;
   };
 
-  getForms = async (): Promise<IFormDocument[]> => {
-    return await Form.find();
+  getForms = async (projectId: string): Promise<IFormDocument[]> => {
+    return await Form.find({ project: projectId });
   };
 
   updateForm = async (
-    id: string,
+    projectId: string,
+    formId: string,
     newData: Record<string, any>
   ): Promise<IFormDocument> => {
     const updatables = ['name', 'description', 'fields'];
     try {
-      const form = await Form.findById(id);
+      const form = await Form.findOne({ project: projectId, _id: formId });
 
       updatables.forEach((key) => {
         if (newData[key] != undefined) {
@@ -67,8 +71,14 @@ class FormService {
     }
   };
 
-  deleteForm = async (id: string): Promise<IFormDocument> => {
-    const form = await Form.findOneAndDelete({ _id: id });
+  deleteForm = async (
+    projectId: string,
+    formId: string
+  ): Promise<IFormDocument> => {
+    const form = await Form.findOneAndDelete({
+      project: projectId,
+      _id: formId,
+    });
 
     if (!form) {
       throw new Error();
@@ -90,11 +100,11 @@ class FormService {
   };
 
   getRecord = async (
-    recordId: string,
-    formId: string
+    formId: string,
+    recordId: string
   ): Promise<Record<string, any>> => {
     const Record = this.models[formId];
-    const record = await Record.findOne({ _id: recordId, form: formId });
+    const record = await Record.findOne({ form: formId, _id: recordId });
 
     if (!record) {
       throw new Error();
@@ -110,14 +120,14 @@ class FormService {
   };
 
   updateRecord = async (
-    recordId: string,
     formId: string,
+    recordId: string,
     newData: Record<string, any>
   ): Promise<Record<string, any>> => {
     const Record = this.models[formId];
     const record = await Record.findOne({
-      _id: recordId,
       form: formId,
+      _id: recordId,
     });
 
     if (!record) {
@@ -134,13 +144,13 @@ class FormService {
   };
 
   deleteRecord = async (
-    recordId: string,
-    formId: string
+    formId: string,
+    recordId: string
   ): Promise<Record<string, any>> => {
     const Record = this.models[formId];
     const record = await Record.findOneAndDelete({
-      _id: recordId,
       form: formId,
+      _id: recordId,
     });
 
     if (!record) {

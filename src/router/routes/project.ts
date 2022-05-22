@@ -1,15 +1,75 @@
 import { Router } from 'express';
 import router from './';
 import auth from '../../middlewares/auth';
-import controller from '../../controllers/project';
+import projectController from '../../controllers/project';
+import formController from '../../controllers/form';
 import { prevalidate, validateForm } from '../../middlewares/validation';
 
 export default (path: string, apiRouter: Router): void => {
   const route = router(path, apiRouter);
 
-  route.get('/', auth, controller.getProjects);
-  route.post('/new', auth, prevalidate, validateForm, controller.createProject);
-  route.put('/:id', auth, prevalidate, validateForm, controller.updateProject);
-  route.get('/:id', auth, controller.getProject);
-  route.delete('/:id', auth, controller.deleteProject);
+  // Project CRUD
+  route.get('/', auth, projectController.getProjects);
+  route.post(
+    '/new',
+    auth,
+    prevalidate,
+    validateForm,
+    projectController.createProject
+  );
+  route.put(
+    '/:projectId',
+    auth,
+    prevalidate,
+    validateForm,
+    projectController.updateProject
+  );
+  route.get('/:projectId', auth, projectController.getProject);
+  route.delete('/:projectId', auth, projectController.deleteProject);
+
+  // Form CRUD
+  route.get('/:projectId/forms', auth, formController.getForms);
+  route.post(
+    '/:projectId/forms/new',
+    auth,
+    prevalidate,
+    validateForm,
+    formController.createForm
+  );
+  route.put(
+    '/:projectId/forms/:formId',
+    auth,
+    prevalidate,
+    validateForm,
+    formController.updateForm
+  );
+  route.get('/:projectId/forms/:formId', auth, formController.getForm);
+  route.delete('/:projectId/forms/:formId', auth, formController.deleteForm);
+
+  // Form record (entry) CRUD
+  route.get(
+    '/:projectId/forms/:formId/records',
+    auth,
+    formController.getRecords
+  );
+  route.post(
+    '/:projectId/forms/:formId/records/new',
+    auth,
+    formController.createRecord
+  );
+  route.get(
+    '/:projectId/forms/:formId/records/:recordId',
+    auth,
+    formController.getRecord
+  );
+  route.put(
+    '/:projectId/forms/:formId/records/:recordId',
+    auth,
+    formController.updateRecord
+  );
+  route.delete(
+    '/:projectId/forms/:formId/records/:recordId',
+    auth,
+    formController.deleteRecord
+  );
 };

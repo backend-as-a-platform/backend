@@ -23,7 +23,7 @@ const fieldsToMongooseSchema = (
   fields: Array<Record<string, any>>
 ): Record<string, any> => {
   const fieldsToIgnore = ['paragraph', 'header'];
-  const complexFields = [
+  const compositeFields = [
     'checkbox-group',
     'radio-group',
     'select',
@@ -53,7 +53,7 @@ const fieldsToMongooseSchema = (
       schema[field.name].type = Number;
     } else if (field.type === 'file') {
       schema[field.name].type = Buffer;
-    } else if (complexFields.includes(field.type)) {
+    } else if (compositeFields.includes(field.type)) {
       schema[field.name].enum = [];
 
       if (!schema[field.name].required) {

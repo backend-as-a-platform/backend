@@ -3,18 +3,19 @@ import service from '../services/project';
 
 class ProjectController {
   createProject = async (
-    req: Request,
+    { body, currentUser }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { name, description } = req.body;
+      const { name, description } = body;
+      const owner = currentUser._id;
 
       res.send(
         await service.createProject({
           name,
           description,
-          owner: req.currentUser._id,
+          owner,
         })
       );
     } catch (err) {
@@ -23,39 +24,61 @@ class ProjectController {
   };
 
   getProject = async (
-    { params }: Request,
+    { params, currentUser }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-    } catch (err) {}
+      res.send(await service.getProject(currentUser._id, params.projectId));
+    } catch (err) {
+      next({ status: 404 });
+    }
   };
 
   getProjects = async (
-    _: Request,
+    { currentUser }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-    } catch (err) {}
+      res.send(await service.getProjects(currentUser._id));
+    } catch (err) {
+      next({ status: 500 });
+    }
   };
 
   updateProject = async (
-    { params, body }: Request,
+    { params, body, currentUser }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-    } catch (err) {}
+      const { name, description } = body;
+
+      res.send(
+        await service.updateProject(currentUser._id, params.projectId, {
+          name,
+          description,
+        })
+      );
+    } catch (err) {
+      next({
+        status: err.code === 11000 ? 400 : 404,
+        reason: err.message || undefined,
+      });
+    }
   };
 
   deleteProject = async (
-    { params }: Request,
+    { params, currentUser }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-    } catch (err) {}
+      res.send(await service.deleteProject(currentUser._id, params.projectId));
+    } catch (err) {
+      next({ status: 404 });
+    }
   };
 }
 
