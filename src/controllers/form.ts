@@ -115,12 +115,16 @@ class FormController {
   };
 
   createRecord = async (
-    { params, body }: Request,
+    { params, currentUser, body }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      res.send(await service.createRecord(params.formId, body));
+      const { projectId, formId } = params;
+
+      await projectService.getProject(currentUser._id, projectId);
+
+      res.send(await service.createRecord(formId, body));
     } catch (err) {
       if (err instanceof TypeError) {
         next({ status: 404 });
@@ -131,41 +135,50 @@ class FormController {
   };
 
   getRecord = async (
-    { params }: Request,
+    { params, currentUser }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { recordId, formId } = params;
+      const { projectId, formId, recordId } = params;
 
-      res.send(await service.getRecord(recordId, formId));
+      await projectService.getProject(currentUser._id, projectId);
+
+      res.send(await service.getRecord(formId, recordId));
     } catch (err) {
       next({ status: 404 });
     }
   };
 
   getRecords = async (
-    { params }: Request,
+    { params, currentUser }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      res.send(await service.getRecords(params.formId));
+      const { projectId, formId } = params;
+
+      await projectService.getProject(currentUser._id, projectId);
+
+      res.send(await service.getRecords(formId));
     } catch (err) {
       next({ status: 404 });
     }
   };
 
   updateRecord = async (
-    { params, body }: Request,
+    { params, currentUser, body }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { formId, recordId } = params;
+      const { projectId, formId, recordId } = params;
 
-      res.send(await service.updateRecord(formId, recordId, body));
+      await projectService.getProject(currentUser._id, projectId);
+
+      res.send(await service.updateRecord(recordId, formId, body));
     } catch (err) {
+      console.log(err);
       if (err instanceof Error || err instanceof TypeError) {
         // TODO
         // when validation fails, 404 is thrown,
@@ -178,12 +191,14 @@ class FormController {
   };
 
   deleteRecord = async (
-    { params }: Request,
+    { params, currentUser }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { formId, recordId } = params;
+      const { projectId, formId, recordId } = params;
+
+      await projectService.getProject(currentUser._id, projectId);
 
       res.send(await service.deleteRecord(formId, recordId));
     } catch (err) {
