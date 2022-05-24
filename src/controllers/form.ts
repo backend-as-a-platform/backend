@@ -176,7 +176,7 @@ class FormController {
 
       await projectService.getProject(currentUser._id, projectId);
 
-      res.send(await service.updateRecord(recordId, formId, body));
+      res.send(await service.updateRecord(formId, recordId, body));
     } catch (err) {
       console.log(err);
       if (err instanceof Error || err instanceof TypeError) {
