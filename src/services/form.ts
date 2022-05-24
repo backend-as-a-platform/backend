@@ -4,8 +4,9 @@ import { IFormDocument } from '../models/form/type';
 import { fieldsToMongooseSchema } from '../lib/parser';
 import { throwDuplicate } from '../lib/error';
 
+export const recordModels = {};
+
 class FormService {
-  private models = {};
   private updatables = [];
 
   createForm = async (data: Record<string, any>): Promise<IFormDocument> => {
@@ -20,7 +21,7 @@ class FormService {
 
       const id = form._id.toString();
 
-      this.models[id] = model(`record-${id}`, schema);
+      recordModels[id] = model(`record-${id}`, schema);
       this.updatables = updatables;
 
       return form;
@@ -87,11 +88,19 @@ class FormService {
     return form;
   };
 
+  deleteForms = async (projectId: string): Promise<void> => {
+    const forms = await Form.find({ project: projectId });
+
+    forms.forEach(async (form) => {
+      await form.remove();
+    });
+  };
+
   createRecord = async (
     formId: string,
     data: Record<string, any>
   ): Promise<Record<string, any>> => {
-    const Record = this.models[formId];
+    const Record = recordModels[formId];
 
     return await new Record({
       ...data,
@@ -103,7 +112,7 @@ class FormService {
     formId: string,
     recordId: string
   ): Promise<Record<string, any>> => {
-    const Record = this.models[formId];
+    const Record = recordModels[formId];
     const record = await Record.findOne({ form: formId, _id: recordId });
 
     if (!record) {
@@ -114,7 +123,7 @@ class FormService {
   };
 
   getRecords = async (formId: string): Promise<Record<string, any>[]> => {
-    const Record = this.models[formId];
+    const Record = recordModels[formId];
 
     return await Record.find();
   };
@@ -124,7 +133,7 @@ class FormService {
     recordId: string,
     newData: Record<string, any>
   ): Promise<Record<string, any>> => {
-    const Record = this.models[formId];
+    const Record = recordModels[formId];
     const record = await Record.findOne({
       form: formId,
       _id: recordId,
@@ -147,7 +156,7 @@ class FormService {
     formId: string,
     recordId: string
   ): Promise<Record<string, any>> => {
-    const Record = this.models[formId];
+    const Record = recordModels[formId];
     const record = await Record.findOneAndDelete({
       form: formId,
       _id: recordId,
@@ -158,6 +167,16 @@ class FormService {
     }
 
     return record;
+  };
+
+  deleteRecords = async (formId: string): Promise<boolean> => {
+    try {
+      await Form.db.dropCollection(`record-${formId}`);
+
+      return true;
+    } catch (err) {
+      return false;
+    }
   };
 }
 

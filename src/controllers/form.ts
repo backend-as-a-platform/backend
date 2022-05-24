@@ -126,7 +126,11 @@ class FormController {
 
       res.send(await service.createRecord(formId, body));
     } catch (err) {
-      if (err instanceof TypeError) {
+      if (
+        err instanceof TypeError ||
+        err.kind === 'ObjectId' ||
+        err.message === 'invalid-project'
+      ) {
         next({ status: 404 });
       } else {
         next({ status: 400 });
