@@ -21,7 +21,7 @@ class FormService {
 
       const id = form._id.toString();
 
-      recordModels[id] = model(`record-${id}`, schema);
+      recordModels[id] = model(`record-${id}`, schema, `record-${id}`);
       this.updatables = updatables;
 
       return form;
@@ -88,12 +88,12 @@ class FormService {
     return form;
   };
 
-  deleteForms = async (projectId: string): Promise<void> => {
+  deleteForms = async (projectId: string): Promise<Record<string, any>> => {
     const forms = await Form.find({ project: projectId });
 
-    forms.forEach(async (form) => {
-      await form.remove();
-    });
+    await Form.deleteMany({ project: projectId });
+
+    return forms;
   };
 
   createRecord = async (

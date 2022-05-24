@@ -2,6 +2,7 @@ import Project from '../models/project';
 import { IProjectDocument } from '../models/project/type';
 import { throwDuplicate } from '../lib/error';
 import formService from './form';
+import { IFormDocument } from '../models/form/type';
 
 class ProjectService {
   createProject = async (
@@ -65,9 +66,8 @@ class ProjectService {
     }
 
     const forms = await formService.deleteForms(project._id);
-    console.log(forms);
 
-    forms.forEach(async (form) => {
+    forms.forEach(async (form: IFormDocument) => {
       await formService.deleteRecords(form._id);
     });
 
