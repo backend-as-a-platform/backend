@@ -1,6 +1,7 @@
 import Project from '../models/project';
 import { IProjectDocument } from '../models/project/type';
 import { throwDuplicate } from '../lib/error';
+import formService from './form';
 
 class ProjectService {
   createProject = async (
@@ -62,6 +63,13 @@ class ProjectService {
     if (!project) {
       throw new Error();
     }
+
+    const forms = await formService.deleteForms(project._id);
+    console.log(forms);
+
+    forms.forEach(async (form) => {
+      await formService.deleteRecords(form._id);
+    });
 
     return project;
   };
