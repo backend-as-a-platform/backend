@@ -8,6 +8,7 @@ export default Joi.object({
     .messages({
       'string.pattern.base': `'name' ${patterns.formName.message}`,
     }),
+  fields: Joi.array().required(),
 })
   .when(Joi.object({ creationMode: true }), {
     then: Joi.object({ name: Joi.required() }),
