@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import userSchema from '../models/user/validation';
+import projectSchema from '../models/project/validation';
 import formSchema from '../models/form/validation';
 
 /** Sets whether the current operation is creation or updation.
@@ -27,8 +28,19 @@ const validateUser = async (
   }
 };
 
-// Can be used to validate Project also as
-// both require only 'name' field to be checked
+const validateProject = async (
+  { body }: Request,
+  _: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    await projectSchema.validateAsync(body, { allowUnknown: true });
+    next();
+  } catch (err) {
+    next({ status: 400, reason: err.message });
+  }
+};
+
 const validateForm = async (
   { body }: Request,
   _: Response,
@@ -42,4 +54,4 @@ const validateForm = async (
   }
 };
 
-export { prevalidate, validateUser, validateForm };
+export { prevalidate, validateUser, validateProject, validateForm };

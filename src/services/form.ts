@@ -3,13 +3,16 @@ import Form from '../models/form';
 import { IFormDocument } from '../models/form/type';
 import { fieldsToMongooseSchema } from '../lib/parser';
 import { throwDuplicate } from '../lib/error';
+import { ValidationError } from 'joi';
 
 export const recordModels = {};
 
 class FormService {
   private updatables = [];
 
-  createForm = async (data: Record<string, any>): Promise<IFormDocument> => {
+  createForm = async (
+    data: Record<string, any>
+  ): Promise<IFormDocument | Record<string, any>> => {
     try {
       const form = await new Form(data).save();
       /**
@@ -26,7 +29,16 @@ class FormService {
 
       return form;
     } catch (err) {
-      throwDuplicate(err);
+      if (err.message === 'wont save') {
+        return { validated: true };
+      } else {
+        if (
+          err instanceof ValidationError ||
+          (err.code && err.code === 11000)
+        ) {
+          throwDuplicate(err);
+        }
+      }
     }
   };
 

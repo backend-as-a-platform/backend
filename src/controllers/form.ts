@@ -9,7 +9,7 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { name, description, fields } = body;
+      const { name, description, fields, test } = body;
       const { projectId } = params;
       // Ensure the user and project is correct
       await projectService.getProject(currentUser._id, projectId);
@@ -19,6 +19,7 @@ class FormController {
           name,
           description,
           fields,
+          test,
           project: projectId,
         })
       );

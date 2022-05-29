@@ -3,7 +3,11 @@ import router from './';
 import auth from '../../middlewares/auth';
 import projectController from '../../controllers/project';
 import formController from '../../controllers/form';
-import { prevalidate, validateForm } from '../../middlewares/validation';
+import {
+  prevalidate,
+  validateProject,
+  validateForm,
+} from '../../middlewares/validation';
 
 export default (path: string, apiRouter: Router): void => {
   const route = router(path, apiRouter);
@@ -14,14 +18,14 @@ export default (path: string, apiRouter: Router): void => {
     '/new',
     auth,
     prevalidate,
-    validateForm,
+    validateProject,
     projectController.createProject
   );
   route.put(
     '/:projectId',
     auth,
     prevalidate,
-    validateForm,
+    validateProject,
     projectController.updateProject
   );
   route.get('/:projectId', auth, projectController.getProject);
