@@ -12,9 +12,11 @@ class ProjectController {
       const { name, description, access, restrictedTo } = body;
       const owner = currentUser._id;
 
-      restrictedTo.forEach((id: string, i: number) => {
-        restrictedTo[i] = Types.ObjectId(id);
-      });
+      if (restrictedTo) {
+        restrictedTo.forEach((id: string, i: number) => {
+          restrictedTo[i] = Types.ObjectId(id);
+        });
+      }
 
       res.send(
         await service.createProject({

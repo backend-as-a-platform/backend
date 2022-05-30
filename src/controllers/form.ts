@@ -12,7 +12,7 @@ class FormController {
       const { name, description, fields, test } = body;
       const { projectId } = params;
       // Ensure the user and project is correct
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(
         await service.createForm({
@@ -49,7 +49,7 @@ class FormController {
     try {
       const { projectId, formId } = params;
 
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.getForm(projectId, formId));
     } catch (err) {
@@ -65,10 +65,11 @@ class FormController {
     try {
       const { projectId } = params;
 
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.getForms(projectId));
     } catch (err) {
+      console.log(err);
       next({ status: 404 });
     }
   };
@@ -82,7 +83,7 @@ class FormController {
       const { projectId, formId } = params;
       const { name, description, fields } = body;
 
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(
         await service.updateForm(projectId, formId, {
@@ -107,7 +108,7 @@ class FormController {
     try {
       const { projectId, formId } = params;
 
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.deleteForm(projectId, formId));
     } catch (err) {
@@ -123,7 +124,7 @@ class FormController {
     try {
       const { projectId, formId } = params;
 
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.createRecord(formId, body));
     } catch (err) {
@@ -147,7 +148,7 @@ class FormController {
     try {
       const { projectId, formId, recordId } = params;
 
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.getRecord(formId, recordId));
     } catch (err) {
@@ -163,7 +164,7 @@ class FormController {
     try {
       const { projectId, formId } = params;
 
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.getRecords(formId));
     } catch (err) {
@@ -179,7 +180,7 @@ class FormController {
     try {
       const { projectId, formId, recordId } = params;
 
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.updateRecord(formId, recordId, body));
     } catch (err) {
@@ -203,7 +204,7 @@ class FormController {
     try {
       const { projectId, formId, recordId } = params;
 
-      await projectService.getProject(currentUser._id, projectId);
+      await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.deleteRecord(formId, recordId));
     } catch (err) {
