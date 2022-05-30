@@ -6,6 +6,7 @@ interface IFieldDocument extends Document {
   label: string;
   name: string;
   className: string;
+  placeholder: string;
   required: boolean;
   requireValidOption: boolean;
   value: string;

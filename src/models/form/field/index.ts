@@ -8,6 +8,7 @@ const schema = new Schema<IFieldDocument>({
   label: String,
   name: String,
   className: String,
+  placeholder: String,
   required: Boolean,
   requireValidOption: Boolean,
   value: String,
@@ -21,7 +22,7 @@ const schema = new Schema<IFieldDocument>({
   ],
 });
 
-schema.pre('save', async function (): Promise<void> {
+const correctFieldValue = async function (): Promise<void> {
   const complexInputTypes = [
     'autocomplete',
     'select',
@@ -34,7 +35,10 @@ schema.pre('save', async function (): Promise<void> {
   } else {
     this.values = undefined;
   }
-});
+};
+
+schema.pre('save', correctFieldValue);
+schema.pre('updateOne', correctFieldValue);
 
 const Field = model('Field', schema);
 
