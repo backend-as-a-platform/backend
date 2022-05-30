@@ -14,7 +14,7 @@ export default Joi.object({
   .when(Joi.object({ creationMode: true }), {
     then: Joi.object({ name: Joi.required() }),
   })
-  .when(Joi.object({ test: false }), {
+  .when(Joi.object({ creationMode: true, test: false }), {
     then: Joi.object({ fields: Joi.required() }),
   })
   .options(options);
