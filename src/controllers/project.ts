@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { Types } from 'mongoose';
 import service from '../services/project';
 
 class ProjectController {
@@ -8,13 +9,19 @@ class ProjectController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { name, description } = body;
+      const { name, description, access, restrictedTo } = body;
       const owner = currentUser._id;
+
+      restrictedTo.forEach((id: string, i: number) => {
+        restrictedTo[i] = Types.ObjectId(id);
+      });
 
       res.send(
         await service.createProject({
           name,
           description,
+          access,
+          restrictedTo,
           owner,
         })
       );
@@ -29,7 +36,7 @@ class ProjectController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      res.send(await service.getProject(currentUser._id, params.projectId));
+      res.send(await service.getProject(params.projectId, currentUser._id));
     } catch (err) {
       next({ status: 404 });
     }

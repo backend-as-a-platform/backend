@@ -19,6 +19,20 @@ class UserController {
     }
   };
 
+  getUserByEmail = async (
+    { params }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const user = await service.getUserByEmail(params.mailId);
+
+      res.send(user);
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
+
   signupUser = async (
     { body }: Request,
     res: Response,

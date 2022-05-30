@@ -24,6 +24,12 @@ schema.virtual('projects', {
   foreignField: 'owner',
 });
 
+schema.virtual('accessibleProjects', {
+  ref: 'Project',
+  localField: '_id',
+  foreignField: 'restrictedTo',
+});
+
 schema.methods.toJSON = function (): Record<string, any> {
   const { _id, name, email } = this;
 

@@ -25,6 +25,16 @@ class UserService {
     return user;
   };
 
+  getUserByEmail = async (email: string): Promise<IUser> => {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error();
+    }
+
+    return user;
+  };
+
   updateUser = async (
     user: IUser,
     newData: Record<string, any>

@@ -9,6 +9,7 @@ interface IUserDocument extends Document {
   verificationToken: string;
   authTokens: Array<Record<string, any>>;
   projects: Array<ObjectId>;
+  accessibleProjects: Array<ObjectId>;
 }
 
 // Methods

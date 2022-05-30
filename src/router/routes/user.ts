@@ -19,6 +19,7 @@ export default (path: string, apiRouter: Router): void => {
   route.delete('/profile', auth, controller.deleteProfile);
   route.delete('/profile/avatar', auth, controller.deleteAvatar);
   route.get('/:id', controller.getUser);
+  route.get('/mail/:mailId', auth, controller.getUserByEmail);
   route.get('/:id/send-verification', controller.sendVerification);
   route.get('/:id/avatar.png', controller.getAvatar);
 

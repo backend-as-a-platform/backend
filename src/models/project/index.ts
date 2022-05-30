@@ -11,12 +11,29 @@ const schema = new Schema<IProjectDocument>({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  access: {
+    type: String,
+    enum: ['public', 'private', 'restrict'],
+    default: 'public',
+  },
+  restrictedTo: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
 });
 
 schema.virtual('forms', {
   ref: 'Form',
   localField: '_id',
   foreignField: 'project',
+});
+
+schema.pre('save', async function (): Promise<void> {
+  if (this.access === 'public' || this.access === 'private') {
+    this.restrictedTo = undefined;
+  }
 });
 
 schema.methods.toJSON = function (): Record<string, any> {

@@ -5,6 +5,8 @@ interface IProjectDocument extends Document {
   description: string;
   owner: Types.ObjectId;
   forms: Array<Types.ObjectId>;
+  access: string;
+  restrictedTo: Array<Types.ObjectId>;
   toJSON(): LeanDocument<this>;
 }
 

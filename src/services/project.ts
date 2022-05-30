@@ -15,8 +15,11 @@ class ProjectService {
     }
   };
 
-  getProject = async (owner: string, id: string) => {
-    const project = await Project.findOne({ _id: id, owner });
+  getProject = async (id: string, user: any) => {
+    const project = await Project.findOne({
+      _id: id,
+      $or: [{ owner: user }, { restrictedTo: { $in: [user] } }],
+    });
 
     if (!project) {
       throw new Error('invalid-project');
