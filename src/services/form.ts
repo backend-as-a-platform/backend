@@ -108,6 +108,19 @@ class FormService {
     return forms;
   };
 
+  setFormStatus = async (
+    projectId: string,
+    formId: string,
+    active: boolean
+  ): Promise<Record<string, any>> => {
+    const form = await Form.findOne({ _id: formId, project: projectId });
+    form['active'] = active;
+
+    await form.save();
+
+    return form;
+  };
+
   createRecord = async (
     formId: string,
     data: Record<string, any>

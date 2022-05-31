@@ -3,7 +3,11 @@ import router from './';
 import auth from '../../middlewares/auth';
 import controller from '../../controllers/user';
 import { avatar } from '../../middlewares/upload';
-import { prevalidate, validateUser } from '../../middlewares/validation';
+import {
+  prevalidate,
+  validateUser,
+  validateUserEmail,
+} from '../../middlewares/validation';
 import { uploadError } from '../../middlewares/error';
 
 export default (path: string, apiRouter: Router): void => {
@@ -19,7 +23,13 @@ export default (path: string, apiRouter: Router): void => {
   route.delete('/profile', auth, controller.deleteProfile);
   route.delete('/profile/avatar', auth, controller.deleteAvatar);
   route.get('/:id', controller.getUser);
-  route.get('/mail/:mailId', auth, controller.getUserByEmail);
+  route.get(
+    '/mail/:mailId',
+    auth,
+    validateUserEmail,
+    controller.getUserByEmail
+  );
+  route.post('/ids', auth, controller.getUsersByIds);
   route.get('/:id/send-verification', controller.sendVerification);
   route.get('/:id/avatar.png', controller.getAvatar);
 

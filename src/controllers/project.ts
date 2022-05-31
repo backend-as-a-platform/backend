@@ -25,6 +25,7 @@ class ProjectController {
           access,
           restrictedTo,
           owner,
+          active: true,
         })
       );
     } catch (err) {
@@ -62,12 +63,14 @@ class ProjectController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { name, description } = body;
+      const { name, description, access, restrictedTo } = body;
 
       res.send(
         await service.updateProject(currentUser._id, params.projectId, {
           name,
           description,
+          access,
+          restrictedTo,
         })
       );
     } catch (err) {
@@ -85,6 +88,24 @@ class ProjectController {
   ): Promise<void> => {
     try {
       res.send(await service.deleteProject(currentUser._id, params.projectId));
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
+
+  setProjectStatus = async (
+    { params, currentUser, body }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      res.send(
+        await service.setProjectStatus(
+          currentUser._id,
+          params.projectId,
+          body.active
+        )
+      );
     } catch (err) {
       next({ status: 404 });
     }

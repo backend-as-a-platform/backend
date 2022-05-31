@@ -21,6 +21,7 @@ class FormController {
           fields,
           test,
           project: projectId,
+          active: true,
         })
       );
     } catch (err) {
@@ -207,6 +208,24 @@ class FormController {
       await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.deleteRecord(formId, recordId));
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
+
+  setFormStatus = async (
+    { params, body }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      res.send(
+        await service.setFormStatus(
+          params.projectId,
+          params.formId,
+          body.active
+        )
+      );
     } catch (err) {
       next({ status: 404 });
     }

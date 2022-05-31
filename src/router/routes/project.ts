@@ -30,6 +30,7 @@ export default (path: string, apiRouter: Router): void => {
   );
   route.get('/:projectId', auth, projectController.getProject);
   route.delete('/:projectId', auth, projectController.deleteProject);
+  route.post('/:projectId/status', auth, projectController.setProjectStatus);
 
   // Form CRUD
   route.get('/:projectId/forms', auth, formController.getForms);
@@ -75,5 +76,10 @@ export default (path: string, apiRouter: Router): void => {
     '/:projectId/forms/:formId/records/:recordId',
     auth,
     formController.deleteRecord
+  );
+  route.post(
+    '/:projectId/forms/:formId/status',
+    auth,
+    formController.setFormStatus
   );
 };

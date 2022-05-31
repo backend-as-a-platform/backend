@@ -11,6 +11,7 @@ const schema = new Schema<IFormDocument>({
   description: String,
   fields: [Field.schema],
   test: Boolean,
+  active: Boolean,
   project: {
     type: Schema.Types.ObjectId,
     ref: 'Project',

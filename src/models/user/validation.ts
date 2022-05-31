@@ -28,3 +28,11 @@ export default Joi.object({
     }),
   })
   .options(options);
+
+const emailSchema = Joi.object({
+  email: Joi.string()
+    .email()
+    .messages({ 'string.email': `'email' ${patterns.email.message}` }),
+});
+
+export { emailSchema };

@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose';
+import Form from '../form';
 import { IProjectDocument } from './type';
 
 const schema = new Schema<IProjectDocument>({
@@ -11,6 +12,7 @@ const schema = new Schema<IProjectDocument>({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  active: Boolean,
   access: {
     type: String,
     enum: ['public', 'private', 'restrict'],
@@ -34,13 +36,10 @@ schema.pre('save', async function (): Promise<void> {
   if (this.access === 'public' || this.access === 'private') {
     this.restrictedTo = undefined;
   }
+  if (this.isModified('active')) {
+    await Form.updateMany({ project: this._id }, { active: this.active });
+  }
 });
-
-schema.methods.toJSON = function (): Record<string, any> {
-  const { _id, name, description } = this;
-
-  return { _id, name, description };
-};
 
 const Project = model('Project', schema);
 

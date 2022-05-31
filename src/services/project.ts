@@ -37,7 +37,7 @@ class ProjectService {
     id: string,
     newData: Record<string, any>
   ): Promise<IProjectDocument> => {
-    const updatables = ['name', 'description'];
+    const updatables = ['name', 'description', 'access', 'restrictedTo'];
 
     try {
       const project = await Project.findOne({ _id: id, owner });
@@ -73,6 +73,19 @@ class ProjectService {
     forms.forEach(async (form: IFormDocument) => {
       await formService.deleteRecords(form._id);
     });
+
+    return project;
+  };
+
+  setProjectStatus = async (
+    owner: string,
+    id: string,
+    active: boolean
+  ): Promise<Record<string, any>> => {
+    const project = await Project.findOne({ _id: id, owner });
+    project['active'] = active;
+
+    await project.save();
 
     return project;
   };

@@ -35,6 +35,22 @@ class UserService {
     return user;
   };
 
+  getUsersByIds = async (userIds: Array<string>): Promise<Array<IUser>> => {
+    const users = [];
+
+    for (let i = 0; i < userIds.length; i++) {
+      const user = await User.findById(userIds[i]);
+
+      users.push(user);
+    }
+
+    if (!users.length) {
+      throw new Error();
+    }
+
+    return users;
+  };
+
   updateUser = async (
     user: IUser,
     newData: Record<string, any>

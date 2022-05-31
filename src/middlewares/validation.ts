@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import userSchema from '../models/user/validation';
+import userSchema, { emailSchema } from '../models/user/validation';
 import projectSchema from '../models/project/validation';
 import formSchema from '../models/form/validation';
 
@@ -22,6 +22,21 @@ const validateUser = async (
 ): Promise<void> => {
   try {
     await userSchema.validateAsync(body, { allowUnknown: true });
+    next();
+  } catch (err) {
+    next({ status: 400, reason: err.message });
+  }
+};
+
+const validateUserEmail = async (
+  { params }: Request,
+  _: Response,
+  next: NextFunction
+): Promise<void> => {
+  const body = { email: params.mailId };
+
+  try {
+    await emailSchema.validateAsync(body, { allowUnknown: true });
     next();
   } catch (err) {
     next({ status: 400, reason: err.message });
@@ -54,4 +69,10 @@ const validateForm = async (
   }
 };
 
-export { prevalidate, validateUser, validateProject, validateForm };
+export {
+  prevalidate,
+  validateUser,
+  validateUserEmail,
+  validateProject,
+  validateForm,
+};

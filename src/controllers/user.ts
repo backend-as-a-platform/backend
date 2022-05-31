@@ -33,6 +33,20 @@ class UserController {
     }
   };
 
+  getUsersByIds = async (
+    { body }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const users = await service.getUsersByIds(body.userIds);
+
+      res.send(users);
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
+
   signupUser = async (
     { body }: Request,
     res: Response,
