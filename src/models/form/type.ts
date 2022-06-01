@@ -7,6 +7,8 @@ interface IFormDocument extends Document {
   fields: Array<Record<string, any>>;
   test: boolean;
   project: Types.ObjectId;
+  access: string;
+  restrictedTo: Array<Types.ObjectId>;
 }
 
 export type { IFormDocument };

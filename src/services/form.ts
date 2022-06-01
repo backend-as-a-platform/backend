@@ -1,5 +1,6 @@
 import { model } from 'mongoose';
 import Form from '../models/form';
+import Project from '../models/project';
 import { IFormDocument } from '../models/form/type';
 import { fieldsToMongooseSchema } from '../lib/parser';
 import { throwDuplicate } from '../lib/error';
@@ -60,12 +61,20 @@ class FormService {
   };
 
   updateForm = async (
+    owner: string,
     projectId: string,
     formId: string,
     newData: Record<string, any>
   ): Promise<IFormDocument> => {
     const updatables = ['name', 'description', 'fields'];
+
     try {
+      const project = await Project.findOne({ _id: projectId, owner });
+
+      if (!project) {
+        throw new Error('not allowed');
+      }
+
       const form = await Form.findOne({ project: projectId, _id: formId });
 
       updatables.forEach((key) => {
@@ -84,10 +93,45 @@ class FormService {
     }
   };
 
+  shareForm = async (
+    owner: string,
+    projectId: string,
+    formId: string,
+    data: Record<string, any>
+  ): Promise<IFormDocument> => {
+    const { access, restrictedTo } = data;
+    const project = await Project.findOne({ _id: projectId, owner });
+
+    if (!project) {
+      throw new Error('404');
+    }
+
+    const form = await Form.findOne({
+      project: projectId,
+      _id: formId,
+    });
+
+    if (!form) {
+      throw new Error('404');
+    }
+
+    form.access = access;
+    form.restrictedTo = restrictedTo;
+
+    return await form.save();
+  };
+
   deleteForm = async (
+    owner: string,
     projectId: string,
     formId: string
   ): Promise<IFormDocument> => {
+    const project = await Project.findOne({ _id: projectId, owner });
+
+    if (!project) {
+      throw new Error('not allowed');
+    }
+
     const form = await Form.findOneAndDelete({
       project: projectId,
       _id: formId,
@@ -109,10 +153,17 @@ class FormService {
   };
 
   setFormStatus = async (
+    owner: string,
     projectId: string,
     formId: string,
     active: boolean
   ): Promise<Record<string, any>> => {
+    const project = await Project.findOne({ _id: projectId, owner });
+
+    if (!project) {
+      throw new Error('not allowed');
+    }
+
     const form = await Form.findOne({ _id: formId, project: projectId });
     form['active'] = active;
 

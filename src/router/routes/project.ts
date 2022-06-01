@@ -12,7 +12,7 @@ import {
 export default (path: string, apiRouter: Router): void => {
   const route = router(path, apiRouter);
 
-  // Project CRUD
+  // Project related
   route.get('/', auth, projectController.getProjects);
   route.post(
     '/new',
@@ -30,9 +30,16 @@ export default (path: string, apiRouter: Router): void => {
   );
   route.get('/:projectId', auth, projectController.getProject);
   route.delete('/:projectId', auth, projectController.deleteProject);
+  route.post(
+    '/:projectId/clone',
+    auth,
+    prevalidate,
+    validateProject,
+    projectController.cloneProject
+  );
   route.post('/:projectId/status', auth, projectController.setProjectStatus);
 
-  // Form CRUD
+  // Form related
   route.get('/:projectId/forms', auth, formController.getForms);
   route.post(
     '/:projectId/forms/new',
@@ -48,6 +55,7 @@ export default (path: string, apiRouter: Router): void => {
     validateForm,
     formController.updateForm
   );
+  route.post('/:projectId/forms/:formId/share', auth, formController.shareForm);
   route.get('/:projectId/forms/:formId', auth, formController.getForm);
   route.delete('/:projectId/forms/:formId', auth, formController.deleteForm);
 

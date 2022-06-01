@@ -81,6 +81,29 @@ class ProjectController {
     }
   };
 
+  cloneProject = async (
+    { params, body, currentUser }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { name, description, access, restrictedTo } = body;
+
+      res.send(
+        await service.cloneProject(params.projectId, {
+          name,
+          description,
+          access,
+          restrictedTo,
+          owner: currentUser._id,
+          active: true,
+        })
+      );
+    } catch (err) {
+      next({ status: err.code, reason: err.message });
+    }
+  };
+
   deleteProject = async (
     { params, currentUser }: Request,
     res: Response,

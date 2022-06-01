@@ -84,10 +84,8 @@ class FormController {
       const { projectId, formId } = params;
       const { name, description, fields } = body;
 
-      await projectService.getProject(projectId, currentUser._id);
-
       res.send(
-        await service.updateForm(projectId, formId, {
+        await service.updateForm(currentUser._id, projectId, formId, {
           name,
           description,
           fields,
@@ -101,6 +99,26 @@ class FormController {
     }
   };
 
+  shareForm = async (
+    { params, body, currentUser }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { projectId, formId } = params;
+      const { access, restrictedTo } = body;
+
+      res.send(
+        await service.shareForm(currentUser._id, projectId, formId, {
+          access,
+          restrictedTo,
+        })
+      );
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
+
   deleteForm = async (
     { params, currentUser }: Request,
     res: Response,
@@ -111,7 +129,26 @@ class FormController {
 
       await projectService.getProject(projectId, currentUser._id);
 
-      res.send(await service.deleteForm(projectId, formId));
+      res.send(await service.deleteForm(currentUser._id, projectId, formId));
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
+
+  setFormStatus = async (
+    { params, body, currentUser }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      res.send(
+        await service.setFormStatus(
+          currentUser._id,
+          params.projectId,
+          params.formId,
+          body.active
+        )
+      );
     } catch (err) {
       next({ status: 404 });
     }
@@ -208,24 +245,6 @@ class FormController {
       await projectService.getProject(projectId, currentUser._id);
 
       res.send(await service.deleteRecord(formId, recordId));
-    } catch (err) {
-      next({ status: 404 });
-    }
-  };
-
-  setFormStatus = async (
-    { params, body }: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      res.send(
-        await service.setFormStatus(
-          params.projectId,
-          params.formId,
-          body.active
-        )
-      );
     } catch (err) {
       next({ status: 404 });
     }

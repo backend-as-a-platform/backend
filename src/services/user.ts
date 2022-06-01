@@ -96,13 +96,14 @@ class UserService {
     const msg = {
       from,
       to,
-      subject: 'Thanks for joining',
-      text: `Welcome to BaaP, ${name}.
+      subject: 'Thanks for Joining BaaP',
+      text: `Hello ${name},
+Welcome to Backend as a Platform (BaaP).
 
 Please verify your profile by following this link:
 ${hostname}/users/verify/${verificationToken}
       
-Link is valid only for one hour.
+The link is valid only for one hour.
 
 Team BaaP
       `,

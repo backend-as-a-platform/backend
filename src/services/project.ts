@@ -1,4 +1,5 @@
 import Project from '../models/project';
+import Form from '../models/form';
 import { IProjectDocument } from '../models/project/type';
 import { throwDuplicate } from '../lib/error';
 import formService from './form';
@@ -59,6 +60,33 @@ class ProjectService {
       } else {
         throw new Error();
       }
+    }
+  };
+
+  cloneProject = async (
+    id: string,
+    data: Record<string, any>
+  ): Promise<IProjectDocument> => {
+    try {
+      const project = await new Project(data).save();
+
+      const ownedForms = await Form.find({ project: id, active: true });
+
+      for (let i = 0; i < ownedForms.length; i++) {
+        const { name, description, fields, active } = ownedForms[i];
+
+        await new Form({
+          name,
+          description,
+          fields,
+          active,
+          project: project._id,
+        }).save();
+      }
+
+      return project;
+    } catch (err) {
+      throwDuplicate(err);
     }
   };
 

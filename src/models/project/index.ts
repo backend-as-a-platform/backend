@@ -5,7 +5,7 @@ import { IProjectDocument } from './type';
 const schema = new Schema<IProjectDocument>({
   name: {
     type: String,
-    unique: true,
+    // unique: true,
   },
   description: String,
   owner: {
@@ -36,6 +36,7 @@ schema.pre('save', async function (): Promise<void> {
   if (this.access === 'public' || this.access === 'private') {
     this.restrictedTo = undefined;
   }
+
   if (this.isModified('active')) {
     await Form.updateMany({ project: this._id }, { active: this.active });
   }
