@@ -18,7 +18,11 @@ class ProjectService {
   getProject = async (id: string, user: any) => {
     const project = await Project.findOne({
       _id: id,
-      $or: [{ owner: user }, { restrictedTo: { $in: [user] } }],
+      $or: [
+        { access: 'public' },
+        { owner: user },
+        { restrictedTo: { $in: [user] } },
+      ],
     });
 
     if (!project) {
