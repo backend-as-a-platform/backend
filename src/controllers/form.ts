@@ -188,11 +188,9 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { projectId, formId } = params;
+      const { formId } = params;
 
-      await projectService.getProject(projectId, currentUser._id);
-
-      res.send(await service.getRecords(formId));
+      res.send(await service.getRecords(currentUser._id, formId));
     } catch (err) {
       next({ status: 404 });
     }

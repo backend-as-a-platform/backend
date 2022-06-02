@@ -219,10 +219,19 @@ class FormService {
     throw new Error();
   };
 
-  getRecords = async (formId: string): Promise<Record<string, any>[]> => {
+  getRecords = async (
+    userId: string,
+    formId: string
+  ): Promise<Record<string, any>[]> => {
     const Record = recordModels[formId];
+    const form = await Form.findById(formId);
+    const project = await Project.findById(form.project);
 
-    return await Record.find();
+    if (project.owner.toString() == userId) {
+      return await Record.find();
+    }
+
+    throw new Error();
   };
 
   updateRecord = async (
