@@ -154,6 +154,20 @@ class FormController {
     }
   };
 
+  getFormFields = async (
+    { params, currentUser }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    const { formId } = params;
+
+    try {
+      res.send(await service.getFormFields(currentUser._id, formId));
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
+
   createRecord = async (
     { params, currentUser, body }: Request,
     res: Response,
@@ -164,7 +178,7 @@ class FormController {
 
       res.send(await service.createRecord(currentUser._id, formId, body));
     } catch (err) {
-      next({ status: 404 });
+      next({ status: 400, reason: err.message });
     }
   };
 
@@ -174,9 +188,11 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { formId, recordId } = params;
+      const { formId, recordId, version } = params;
 
-      res.send(await service.getRecord(currentUser._id, formId, recordId));
+      res.send(
+        await service.getRecord(currentUser._id, formId, recordId, version)
+      );
     } catch (err) {
       next({ status: 404 });
     }
@@ -188,9 +204,9 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { formId } = params;
+      const { formId, version } = params;
 
-      res.send(await service.getRecords(currentUser._id, formId));
+      res.send(await service.getRecords(currentUser._id, formId, version));
     } catch (err) {
       next({ status: 404 });
     }
@@ -202,21 +218,19 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { formId, recordId } = params;
+      const { formId, recordId, version } = params;
 
       res.send(
-        await service.updateRecord(currentUser._id, formId, recordId, body)
+        await service.updateRecord(
+          currentUser._id,
+          formId,
+          recordId,
+          body,
+          version
+        )
       );
     } catch (err) {
-      console.log(err);
-      if (err instanceof Error || err instanceof TypeError) {
-        // TODO
-        // when validation fails, 404 is thrown,
-        // need to fix this.
-        next({ status: 404 });
-      } else {
-        next({ status: 400 });
-      }
+      next({ status: err.status, reason: err.reason });
     }
   };
 
@@ -226,9 +240,11 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { formId, recordId } = params;
+      const { formId, recordId, version } = params;
 
-      res.send(await service.deleteRecord(currentUser._id, formId, recordId));
+      res.send(
+        await service.deleteRecord(currentUser._id, formId, recordId, version)
+      );
     } catch (err) {
       next({ status: 404 });
     }

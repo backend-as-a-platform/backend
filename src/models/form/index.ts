@@ -26,6 +26,7 @@ const schema = new Schema<IFormDocument>({
       ref: 'User',
     },
   ],
+  version: Number,
 });
 
 schema.pre('save', async function (): Promise<void> {

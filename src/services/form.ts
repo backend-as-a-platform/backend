@@ -3,30 +3,33 @@ import Form from '../models/form';
 import Project from '../models/project';
 import { IFormDocument } from '../models/form/type';
 import { fieldsToMongooseSchema } from '../lib/parser';
-import { throwDuplicate } from '../lib/error';
+import { throwDuplicate, throwRequired } from '../lib/error';
 import { ValidationError } from 'joi';
 
-export const recordModels = {};
-
 class FormService {
+  private recordModels = {};
   private updatables = [];
 
   createForm = async (
     data: Record<string, any>
   ): Promise<IFormDocument | Record<string, any>> => {
     try {
-      const form = await new Form(data).save();
+      const form = await new Form({ ...data, version: 1 }).save();
       /**
        * Schema for the form record.
        * It can be used to create the curresponding model
        * for managing CRUD for the form record.
        */
       const { schema, updatables } = fieldsToMongooseSchema(form.fields);
-
       const id = form._id.toString();
+      const version = form.version;
 
-      recordModels[id] = model(`record-${id}`, schema, `record-${id}`);
-      this.updatables = updatables;
+      this.recordModels[`${id}-v${version}`] = model(
+        `records-${id}-v${version}`,
+        schema,
+        `records-${id}-v${version}`
+      );
+      this.updatables[`${id}-v${version}`] = updatables;
 
       return form;
     } catch (err) {
@@ -66,7 +69,7 @@ class FormService {
     formId: string,
     newData: Record<string, any>
   ): Promise<IFormDocument> => {
-    const updatables = ['name', 'description', 'fields'];
+    const formUpdatables = ['name', 'description', 'fields'];
 
     try {
       const project = await Project.findOne({ _id: projectId, owner });
@@ -77,13 +80,28 @@ class FormService {
 
       const form = await Form.findOne({ project: projectId, _id: formId });
 
-      updatables.forEach((key) => {
+      form.version++;
+
+      formUpdatables.forEach((key) => {
         if (newData[key] != undefined) {
           form[key] = newData[key];
         }
       });
 
-      return await form.save();
+      await form.save();
+
+      const { schema, updatables } = fieldsToMongooseSchema(form.fields);
+      const id = form._id.toString();
+      const version = form.version;
+
+      this.recordModels[`${id}-v${version}`] = model(
+        `records-${id}-v${version}`,
+        schema,
+        `records-${id}-v${version}`
+      );
+      this.updatables[`${id}-v${version}`] = updatables;
+
+      return form;
     } catch (err) {
       if (err.code === 11000) {
         throwDuplicate(err);
@@ -172,59 +190,90 @@ class FormService {
     return form;
   };
 
-  createRecord = async (
-    userId: string,
-    formId: string,
-    data: Record<string, any>
+  getFormFields = async (
+    userId: any,
+    formId: string
   ): Promise<Record<string, any>> => {
-    const Record = recordModels[formId];
-    const form = await Form.findById(formId);
-    const project = await Project.findById(form.project);
+    const form = await Form.findOne({ _id: formId });
 
-    if (
-      project.owner.toString() == userId ||
-      form.access === 'public' ||
-      (form.access === 'restrict' && form.restrictedTo.includes(userId))
-    ) {
-      const record = await new Record({
-        ...data,
-        form: formId,
-      }).save();
+    if (form.access === 'public' || form.restrictedTo.includes(userId)) {
+      return form;
+    } else {
+      const project = await Project.findById(form.project);
 
-      return record;
-    }
-
-    throw new Error('not-allowed');
-  };
-
-  getRecord = async (
-    userId: string,
-    formId: string,
-    recordId: string
-  ): Promise<Record<string, any>> => {
-    const Record = recordModels[formId];
-    const form = await Form.findById(formId);
-    const project = await Project.findById(form.project);
-
-    if (
-      project.owner.toString() == userId ||
-      form.access === 'public' ||
-      (form.access === 'restrict' && form.restrictedTo.includes(userId))
-    ) {
-      const record = await Record.findOne({ form: formId, _id: recordId });
-
-      return record;
+      if (project.owner.toString() == userId) {
+        return form;
+      }
     }
 
     throw new Error();
   };
 
+  createRecord = async (
+    userId: string,
+    formId: string,
+    data: Record<string, any>
+  ): Promise<Record<string, any>> => {
+    try {
+      const form = await Form.findById(formId);
+      const Record = this.recordModels[`${formId}-v${form.version}`];
+      const project = await Project.findById(form.project);
+
+      if (
+        project.owner.toString() == userId ||
+        form.access === 'public' ||
+        (form.access === 'restrict' && form.restrictedTo.includes(userId))
+      ) {
+        const record = await new Record({
+          ...data,
+          form: formId,
+        }).save();
+
+        return record;
+      }
+    } catch (err) {
+      throwRequired(err);
+    }
+  };
+
+  getRecord = async (
+    userId: string,
+    formId: string,
+    recordId: string,
+    version: any
+  ): Promise<Record<string, any>> => {
+    try {
+      const form = await Form.findById(formId);
+      const formVersion = version ? version * 1 : form.version;
+      const Record = this.recordModels[`${formId}-v${formVersion}`];
+      const project = await Project.findById(form.project);
+
+      if (
+        project.owner.toString() == userId ||
+        form.access === 'public' ||
+        (form.access === 'restrict' && form.restrictedTo.includes(userId))
+      ) {
+        const record = await Record.findOne({ form: formId, _id: recordId });
+
+        if (!record) {
+          throw new Error();
+        }
+
+        return record;
+      }
+    } catch (err) {
+      throw new Error();
+    }
+  };
+
   getRecords = async (
     userId: string,
-    formId: string
+    formId: string,
+    version: any
   ): Promise<Record<string, any>[]> => {
-    const Record = recordModels[formId];
     const form = await Form.findById(formId);
+    const formVersion = version ? version * 1 : form.version;
+    const Record = this.recordModels[`${formId}-v${formVersion}`];
     const project = await Project.findById(form.project);
 
     if (project.owner.toString() == userId) {
@@ -238,41 +287,51 @@ class FormService {
     userId: string,
     formId: string,
     recordId: string,
-    newData: Record<string, any>
+    newData: Record<string, any>,
+    version: any
   ): Promise<Record<string, any>> => {
-    const Record = recordModels[formId];
-    const form = await Form.findById(formId);
-    const project = await Project.findById(form.project);
+    try {
+      const form = await Form.findById(formId);
+      const formVersion = version ? version * 1 : form.version;
+      const Record = this.recordModels[`${formId}-v${formVersion}`];
+      const project = await Project.findById(form.project);
 
-    if (
-      project.owner.toString() == userId ||
-      form.access === 'public' ||
-      (form.access === 'restrict' && form.restrictedTo.includes(userId))
-    ) {
-      const record = await Record.findOne({
-        form: formId,
-        _id: recordId,
-      });
+      if (
+        project.owner.toString() == userId ||
+        form.access === 'public' ||
+        (form.access === 'restrict' && form.restrictedTo.includes(userId))
+      ) {
+        const record = await Record.findOne({
+          form: formId,
+          _id: recordId,
+        });
 
-      this.updatables.forEach((key) => {
-        if (newData[key] != undefined) {
-          record[key] = newData[key];
-        }
-      });
+        this.updatables[`${formId}-v${form.version}`].forEach((key) => {
+          if (newData[key] != undefined) {
+            record[key] = newData[key];
+          }
+        });
 
-      return await record.save();
+        return await record.save();
+      }
+    } catch (err) {
+      if (err instanceof TypeError || (err.kind && err.kind == 'ObjectId')) {
+        throw { status: 404, reason: undefined };
+      }
+
+      throwRequired(err);
     }
-
-    throw new Error();
   };
 
   deleteRecord = async (
     userId: string,
     formId: string,
-    recordId: string
+    recordId: string,
+    version: any
   ): Promise<Record<string, any>> => {
-    const Record = recordModels[formId];
     const form = await Form.findById(formId);
+    const formVersion = version ? version * 1 : form.version;
+    const Record = this.recordModels[`${formId}-v${formVersion}`];
     const project = await Project.findById(form.project);
 
     if (
@@ -297,11 +356,15 @@ class FormService {
 
   deleteRecords = async (formId: string): Promise<boolean> => {
     try {
-      await Form.db.dropCollection(`record-${formId}`);
+      const form = await Form.findById(formId);
+
+      for (let i = 1; i <= form.version; i++) {
+        await Form.db.dropCollection(`records-${formId}-v${i}`);
+      }
 
       return true;
     } catch (err) {
-      return false;
+      return;
     }
   };
 }

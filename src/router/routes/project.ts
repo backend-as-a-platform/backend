@@ -12,7 +12,7 @@ import {
 export default (path: string, apiRouter: Router): void => {
   const route = router(path, apiRouter);
 
-  // Project related
+  // Project routes
   route.get('/', auth, projectController.getProjects);
   route.post(
     '/new',
@@ -39,7 +39,7 @@ export default (path: string, apiRouter: Router): void => {
   );
   route.post('/:projectId/status', auth, projectController.setProjectStatus);
 
-  // Form related
+  // Form routes
   route.get('/:projectId/forms', auth, formController.getForms);
   route.post(
     '/:projectId/forms/new',

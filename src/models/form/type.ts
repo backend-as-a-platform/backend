@@ -9,6 +9,7 @@ interface IFormDocument extends Document {
   project: Types.ObjectId;
   access: string;
   restrictedTo: Array<Types.ObjectId>;
+  version: number;
 }
 
 export type { IFormDocument };

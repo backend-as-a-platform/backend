@@ -24,10 +24,25 @@ const throwDuplicate = (err: Record<string, any>): Error => {
   throw { code: 11000, message: `'${key}' is already taken` };
 };
 
+/** For MongoDB 'required' error */
+const throwRequired = (err: Record<string, any>): Error => {
+  const message = err.message.split('.').map((msg) => {
+    try {
+      return msg.split('Path ')[1].split('`').join("'");
+    } catch (_) {
+      null;
+    }
+  });
+
+  message.pop();
+
+  throw { status: 400, reason: message.length === 1 ? message[0] : message };
+};
+
 /** Server will log the error and panic */
 const panic = (err: string): void => {
   console.error(err);
   process.exit(1);
 };
 
-export { setError, throwDuplicate, panic };
+export { setError, throwDuplicate, throwRequired, panic };
