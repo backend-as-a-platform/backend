@@ -55,36 +55,9 @@ export default (path: string, apiRouter: Router): void => {
     validateForm,
     formController.updateForm
   );
-  route.post('/:projectId/forms/:formId/share', auth, formController.shareForm);
   route.get('/:projectId/forms/:formId', auth, formController.getForm);
   route.delete('/:projectId/forms/:formId', auth, formController.deleteForm);
-
-  // Form record (entry) CRUD
-  route.get(
-    '/:projectId/forms/:formId/records',
-    auth,
-    formController.getRecords
-  );
-  route.post(
-    '/:projectId/forms/:formId/records/new',
-    auth,
-    formController.createRecord
-  );
-  route.get(
-    '/:projectId/forms/:formId/records/:recordId',
-    auth,
-    formController.getRecord
-  );
-  route.put(
-    '/:projectId/forms/:formId/records/:recordId',
-    auth,
-    formController.updateRecord
-  );
-  route.delete(
-    '/:projectId/forms/:formId/records/:recordId',
-    auth,
-    formController.deleteRecord
-  );
+  route.post('/:projectId/forms/:formId/share', auth, formController.shareForm);
   route.post(
     '/:projectId/forms/:formId/status',
     auth,

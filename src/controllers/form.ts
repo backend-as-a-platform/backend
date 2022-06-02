@@ -160,21 +160,11 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { projectId, formId } = params;
+      const { formId } = params;
 
-      await projectService.getProject(projectId, currentUser._id);
-
-      res.send(await service.createRecord(formId, body));
+      res.send(await service.createRecord(currentUser._id, formId, body));
     } catch (err) {
-      if (
-        err instanceof TypeError ||
-        err.kind === 'ObjectId' ||
-        err.message === 'invalid-project'
-      ) {
-        next({ status: 404 });
-      } else {
-        next({ status: 400 });
-      }
+      next({ status: 404 });
     }
   };
 
@@ -184,11 +174,9 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { projectId, formId, recordId } = params;
+      const { formId, recordId } = params;
 
-      await projectService.getProject(projectId, currentUser._id);
-
-      res.send(await service.getRecord(formId, recordId));
+      res.send(await service.getRecord(currentUser._id, formId, recordId));
     } catch (err) {
       next({ status: 404 });
     }
@@ -216,11 +204,11 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { projectId, formId, recordId } = params;
+      const { formId, recordId } = params;
 
-      await projectService.getProject(projectId, currentUser._id);
-
-      res.send(await service.updateRecord(formId, recordId, body));
+      res.send(
+        await service.updateRecord(currentUser._id, formId, recordId, body)
+      );
     } catch (err) {
       console.log(err);
       if (err instanceof Error || err instanceof TypeError) {
@@ -240,11 +228,9 @@ class FormController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { projectId, formId, recordId } = params;
+      const { formId, recordId } = params;
 
-      await projectService.getProject(projectId, currentUser._id);
-
-      res.send(await service.deleteRecord(formId, recordId));
+      res.send(await service.deleteRecord(currentUser._id, formId, recordId));
     } catch (err) {
       next({ status: 404 });
     }

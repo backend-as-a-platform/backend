@@ -173,29 +173,50 @@ class FormService {
   };
 
   createRecord = async (
+    userId: string,
     formId: string,
     data: Record<string, any>
   ): Promise<Record<string, any>> => {
     const Record = recordModels[formId];
+    const form = await Form.findById(formId);
+    const project = await Project.findById(form.project);
 
-    return await new Record({
-      ...data,
-      form: formId,
-    }).save();
+    if (
+      project.owner.toString() == userId ||
+      form.access === 'public' ||
+      (form.access === 'restrict' && form.restrictedTo.includes(userId))
+    ) {
+      const record = await new Record({
+        ...data,
+        form: formId,
+      }).save();
+
+      return record;
+    }
+
+    throw new Error('not-allowed');
   };
 
   getRecord = async (
+    userId: string,
     formId: string,
     recordId: string
   ): Promise<Record<string, any>> => {
     const Record = recordModels[formId];
-    const record = await Record.findOne({ form: formId, _id: recordId });
+    const form = await Form.findById(formId);
+    const project = await Project.findById(form.project);
 
-    if (!record) {
-      throw new Error();
+    if (
+      project.owner.toString() == userId ||
+      form.access === 'public' ||
+      (form.access === 'restrict' && form.restrictedTo.includes(userId))
+    ) {
+      const record = await Record.findOne({ form: formId, _id: recordId });
+
+      return record;
     }
 
-    return record;
+    throw new Error();
   };
 
   getRecords = async (formId: string): Promise<Record<string, any>[]> => {
@@ -205,44 +226,64 @@ class FormService {
   };
 
   updateRecord = async (
+    userId: string,
     formId: string,
     recordId: string,
     newData: Record<string, any>
   ): Promise<Record<string, any>> => {
     const Record = recordModels[formId];
-    const record = await Record.findOne({
-      form: formId,
-      _id: recordId,
-    });
+    const form = await Form.findById(formId);
+    const project = await Project.findById(form.project);
 
-    if (!record) {
-      throw new Error();
+    if (
+      project.owner.toString() == userId ||
+      form.access === 'public' ||
+      (form.access === 'restrict' && form.restrictedTo.includes(userId))
+    ) {
+      const record = await Record.findOne({
+        form: formId,
+        _id: recordId,
+      });
+
+      this.updatables.forEach((key) => {
+        if (newData[key] != undefined) {
+          record[key] = newData[key];
+        }
+      });
+
+      return await record.save();
     }
 
-    this.updatables.forEach((key) => {
-      if (newData[key] != undefined) {
-        record[key] = newData[key];
-      }
-    });
-
-    return await record.save();
+    throw new Error();
   };
 
   deleteRecord = async (
+    userId: string,
     formId: string,
     recordId: string
   ): Promise<Record<string, any>> => {
     const Record = recordModels[formId];
-    const record = await Record.findOneAndDelete({
-      form: formId,
-      _id: recordId,
-    });
+    const form = await Form.findById(formId);
+    const project = await Project.findById(form.project);
 
-    if (!record) {
-      throw new Error();
+    if (
+      project.owner.toString() == userId ||
+      form.access === 'public' ||
+      (form.access === 'restrict' && form.restrictedTo.includes(userId))
+    ) {
+      const record = await Record.findOneAndDelete({
+        form: formId,
+        _id: recordId,
+      });
+
+      if (!record) {
+        throw new Error();
+      }
+
+      return record;
     }
 
-    return record;
+    throw new Error();
   };
 
   deleteRecords = async (formId: string): Promise<boolean> => {
