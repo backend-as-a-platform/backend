@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import service from '../services/form';
 import projectService from '../services/project';
+import { exportToFile } from '../lib/parser';
 
 class FormController {
   createForm = async (
@@ -70,7 +71,6 @@ class FormController {
 
       res.send(await service.getForms(projectId));
     } catch (err) {
-      console.log(err);
       next({ status: 404 });
     }
   };
@@ -199,14 +199,57 @@ class FormController {
   };
 
   getRecords = async (
-    { params, currentUser }: Request,
+    { params, currentUser, query }: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
       const { formId, version } = params;
+      const { format } = query;
 
-      res.send(await service.getRecords(currentUser._id, formId, version));
+      const records = await service.getRecords(
+        currentUser._id,
+        formId,
+        version
+      );
+
+      if (format) {
+        const rows = records.map((record) => {
+          const recordCopy = { ...record._doc };
+
+          delete recordCopy._id;
+          delete recordCopy.form;
+          delete recordCopy.__v;
+
+          return recordCopy;
+        });
+
+        const file = await exportToFile(formId, rows, format);
+
+        if (file) {
+          res.send({ file });
+        }
+      } else {
+        res.send(records);
+      }
+    } catch (err) {
+      if (err.type && err.type === 'export') {
+        next({ status: 400, reason: err.message });
+      }
+
+      next({ status: 404 });
+    }
+  };
+
+  downloadFile = async (
+    { query }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { file } = query;
+
+      res.download(`/dev/shm/${file.toString().split('/').join('')}`);
     } catch (err) {
       next({ status: 404 });
     }

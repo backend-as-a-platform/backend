@@ -1,4 +1,10 @@
 import { Document, Schema } from 'mongoose';
+import * as xlsx from 'xlsx';
+import * as fs from 'fs';
+import { Readable } from 'stream';
+import { throwExportError } from './error';
+
+xlsx.stream.set_readable(Readable);
 
 /**
  * Parser that takes an array of form fields
@@ -46,6 +52,7 @@ const fieldsToMongooseSchema = (
       schema[field.name] = {
         type: String,
         required: field.required,
+        default: '',
       };
     }
 
@@ -71,4 +78,49 @@ const fieldsToMongooseSchema = (
   return { schema, updatables };
 };
 
-export { fieldsToMongooseSchema };
+const initXlsx = (): Record<string, any> => {
+  const workBook = xlsx.utils.book_new();
+  const path = '/dev/shm';
+  const fileName = 'BaaP-Datasheet';
+
+  return { workBook, path, fileName };
+};
+
+const exportToFile = async (
+  formId: string,
+  records: Array<Record<string, any>>,
+  format: xlsx.BookType | any
+): Promise<string> => {
+  const supportedFormats = ['csv', 'html', 'rtf', 'txt', 'xlsx'];
+  const { workBook, path, fileName } = initXlsx();
+  const relFilePath = `${fileName}-${formId}.${format}`;
+  const absFilePath = `${path}/${relFilePath}`;
+  const sheet = xlsx.utils.json_to_sheet(records);
+
+  xlsx.utils.book_append_sheet(workBook, sheet, fileName);
+
+  try {
+    if (format === 'json') {
+      const json = JSON.stringify(records);
+
+      fs.writeFile(absFilePath, json, () => null);
+
+      return relFilePath;
+    } else if (supportedFormats.includes(format)) {
+      await xlsx.writeFileAsync(
+        absFilePath,
+        workBook,
+        { bookType: format },
+        () => null
+      );
+
+      return relFilePath;
+    } else {
+      throwExportError('invalid file format');
+    }
+  } catch (err) {
+    throwExportError(err.message);
+  }
+};
+
+export { fieldsToMongooseSchema, exportToFile };

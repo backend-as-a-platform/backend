@@ -39,10 +39,14 @@ const throwRequired = (err: Record<string, any>): Error => {
   throw { status: 400, reason: message.length === 1 ? message[0] : message };
 };
 
+const throwExportError = (message: string): Error => {
+  throw { type: 'export', message };
+};
+
 /** Server will log the error and panic */
 const panic = (err: string): void => {
   console.error(err);
   process.exit(1);
 };
 
-export { setError, throwDuplicate, throwRequired, panic };
+export { setError, throwDuplicate, throwRequired, throwExportError, panic };

@@ -6,6 +6,7 @@ import controller from '../../controllers/form';
 export default (path: string, apiRouter: Router): void => {
   const route = router(path, apiRouter);
 
+  route.get('/download', controller.downloadFile);
   route.post('/:formId', auth, controller.createRecord);
   route.get('/:formId', auth, controller.getRecords);
   route.get('/:formId/v/:version', auth, controller.getRecords);
