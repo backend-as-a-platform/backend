@@ -126,6 +126,50 @@ class UserController {
     }
   };
 
+  sendPasswordResetMail = async (
+    { body }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const isDevMode = config('NODE_ENV') === 'development';
+      const { email } = body;
+
+      const passwordResetToken = await service.sendPasswordResetMail(
+        email,
+        isDevMode
+      );
+
+      res.send({
+        result: `password reset instructions have been sent to ${email}`,
+        debug: isDevMode
+          ? `POST ${config(
+              'HOSTNAME'
+            )}/users/reset-password/${passwordResetToken}`
+          : undefined,
+      });
+    } catch (err) {
+      next({ status: 400 });
+    }
+  };
+
+  resetPassword = async (
+    { params, body }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { passwordResetToken } = params;
+      const { newPassword } = body;
+
+      const user = await User.resetPassword(passwordResetToken, newPassword);
+
+      res.send(user);
+    } catch (err) {
+      next({ status: 404 });
+    }
+  };
+
   logoutCurrentSession = async (
     { currentUser, authToken }: Request,
     res: Response,

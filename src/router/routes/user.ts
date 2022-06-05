@@ -22,6 +22,8 @@ export default (path: string, apiRouter: Router): void => {
   route.get('/profile', auth, controller.getProfile);
   route.delete('/profile', auth, controller.deleteProfile);
   route.delete('/profile/avatar', auth, controller.deleteAvatar);
+  route.post('/request-password-reset', controller.sendPasswordResetMail);
+  route.post('/reset-password/:passwordResetToken', controller.resetPassword);
   route.get('/:id', controller.getUser);
   route.get(
     '/mail/:mailId',

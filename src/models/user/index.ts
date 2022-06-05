@@ -15,11 +15,18 @@ const schema = new Schema<IUserDocument>({
   password: String,
   avatar: Buffer,
   verificationToken: String,
+  passwordResetToken: String,
   authTokens: [{ authToken: String }],
 });
 
 schema.virtual('projects', {
   ref: 'Project',
+  localField: '_id',
+  foreignField: 'owner',
+});
+
+schema.virtual('forms', {
+  ref: 'Form',
   localField: '_id',
   foreignField: 'owner',
 });
@@ -70,6 +77,36 @@ schema.methods.getVerificationToken = async function (): Promise<string> {
   return token;
 };
 
+schema.methods.getPasswordResetToken = async function (): Promise<string> {
+  const token = sign(
+    {
+      _id: this._id.toString(),
+    },
+    jwtSecret,
+    { expiresIn: '1h' }
+  );
+
+  this.passwordResetToken = token;
+
+  await this.save();
+
+  return token;
+};
+
+schema.statics.resetPassword = async (
+  passwordResetToken: string,
+  newPassword: string
+): Promise<IUserDocument> => {
+  const user = await User.verifyPasswordResetToken(passwordResetToken);
+
+  user.password = newPassword;
+  user.passwordResetToken = undefined;
+
+  await user.save();
+
+  return user;
+};
+
 schema.statics.findByCredentials = async (
   email: string,
   password: string
@@ -102,6 +139,20 @@ schema.statics.verifyUser = async (verificationToken): Promise<void> => {
   user.verificationToken = undefined;
 
   await user.save();
+};
+
+schema.statics.verifyPasswordResetToken = async (
+  passwordResetToken: string
+): Promise<IUser> => {
+  const { _id } = verify(passwordResetToken, jwtSecret) as JwtPayload;
+
+  const user = await User.findOne({ _id, passwordResetToken });
+
+  if (!user) {
+    throw new Error('password reset token is not valid');
+  }
+
+  return user;
 };
 
 schema.pre('save', async function (): Promise<void> {

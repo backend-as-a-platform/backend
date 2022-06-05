@@ -21,6 +21,7 @@ export default (path: string, apiRouter: Router): void => {
     validateProject,
     projectController.createProject
   );
+  route.get('/stats', auth, projectController.getStats);
   route.put(
     '/:projectId',
     auth,

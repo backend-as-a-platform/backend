@@ -6,6 +6,13 @@ import User from '../models/user';
 import { IUser } from '../models/user/type';
 import { throwDuplicate } from '../lib/error';
 
+const key = config('SENDGRID_API_KEY');
+const from = config('SENDGRID_VERIFIED_EMAIL');
+const hostname = config('HOSTNAME');
+const frontendUri = config('FRONTEND_URI');
+
+mail.setApiKey(key);
+
 class UserService {
   createUser = async (data: Record<string, any>): Promise<IUser> => {
     try {
@@ -87,20 +94,16 @@ class UserService {
     name: string,
     verificationToken: string
   ): Promise<void> => {
-    const key = config('SENDGRID_API_KEY');
-    const from = config('SENDGRID_VERIFIED_EMAIL');
-    const hostname = config('HOSTNAME');
-
-    mail.setApiKey(key);
-
     const msg = {
       from,
       to,
-      subject: 'Thanks for Joining BaaP',
+      subject: 'Thanks for joining BaaP',
       text: `Hello ${name},
+
 Welcome to Backend as a Platform (BaaP).
 
 Please verify your profile by following this link:
+
 ${hostname}/users/verify/${verificationToken}
       
 The link is valid only for one hour.
@@ -110,6 +113,41 @@ Team BaaP
     };
 
     await mail.send(msg);
+  };
+
+  sendPasswordResetMail = async (
+    email: string,
+    isDevMode: boolean
+  ): Promise<string> => {
+    const user = await User.findOne({ email });
+
+    if (user) {
+      const passwordResetToken = user.getPasswordResetToken();
+
+      const msg = {
+        from,
+        to: email,
+        subject: 'Reset your BaaP password',
+        text: `Hello ${user.name},
+
+Someone (hopefully you) has requested a password reset for your BaaP account. Follow the link below to set a new password:
+
+${frontendUri}/reset-password/${passwordResetToken}
+
+The link is valid only for one hour.
+
+If you do not wish to reset your password, kindly disregard this email and no action will be taken.
+
+Team BaaP
+        `,
+      };
+
+      isDevMode || (await mail.send(msg));
+
+      return passwordResetToken;
+    } else {
+      throw new Error();
+    }
   };
 
   loginUser = async (

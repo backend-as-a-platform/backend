@@ -21,6 +21,7 @@ class FormController {
           description,
           fields,
           test,
+          owner: currentUser._id,
           project: projectId,
           active: true,
         })

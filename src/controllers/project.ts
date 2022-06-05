@@ -3,6 +3,18 @@ import { Types } from 'mongoose';
 import service from '../services/project';
 
 class ProjectController {
+  getStats = async (
+    { currentUser }: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      res.send(await service.getStats(currentUser._id));
+    } catch (err) {
+      next({ status: 500 });
+    }
+  };
+
   createProject = async (
     { body, currentUser }: Request,
     res: Response,

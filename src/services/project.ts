@@ -6,6 +6,22 @@ import formService from './form';
 import { IFormDocument } from '../models/form/type';
 
 class ProjectService {
+  getStats = async (userId: string): Promise<Record<string, any>> => {
+    try {
+      const projects = await Project.find({ owner: userId });
+      const inactiveProjects = projects.filter((project) => !project.active);
+      const forms = await Form.find({ owner: userId });
+      const inactiveForms = forms.filter((form) => !form.active);
+
+      return {
+        projects: { total: projects.length, inactive: inactiveProjects.length },
+        forms: { total: forms.length, inactive: inactiveForms.length },
+      };
+    } catch (err) {
+      throw new Error();
+    }
+  };
+
   createProject = async (
     data: Record<string, any>
   ): Promise<IProjectDocument> => {
