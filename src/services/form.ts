@@ -190,7 +190,7 @@ class FormService {
     return form;
   };
 
-  getFormFields = async (
+  getFormInfo = async (
     userId: any,
     formId: string
   ): Promise<Record<string, any>> => {
@@ -232,6 +232,7 @@ class FormService {
         return record;
       }
     } catch (err) {
+      console.log(err);
       throwRequired(err);
     }
   };

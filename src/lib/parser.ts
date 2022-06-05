@@ -30,10 +30,10 @@ const fieldsToMongooseSchema = (
 ): Record<string, any> => {
   const fieldsToIgnore = ['paragraph', 'header'];
   const compositeFields = [
-    'checkbox-group',
+    // 'checkbox-group',
     'radio-group',
     'select',
-    'autocomplete',
+    // 'autocomplete',
   ];
   const updatables = [];
 
@@ -58,6 +58,7 @@ const fieldsToMongooseSchema = (
 
     if (field.type === 'number') {
       schema[field.name].type = Number;
+      schema[field.name].default = 0;
     } else if (field.type === 'file') {
       schema[field.name].type = Buffer;
     } else if (compositeFields.includes(field.type)) {
@@ -66,6 +67,13 @@ const fieldsToMongooseSchema = (
       if (!schema[field.name].required) {
         schema[field.name].enum.push('');
       }
+
+      field.values.forEach(({ value }: Record<string, any>) => {
+        schema[field.name].enum.push(value);
+      });
+    } else if (field.type === 'checkbox-group') {
+      schema[field.name].type = [String];
+      schema[field.name].enum = [];
 
       field.values.forEach(({ value }: Record<string, any>) => {
         schema[field.name].enum.push(value);
@@ -95,18 +103,31 @@ const exportToFile = async (
   const { workBook, path, fileName } = initXlsx();
   const relFilePath = `${fileName}-${formId}.${format}`;
   const absFilePath = `${path}/${relFilePath}`;
-  const sheet = xlsx.utils.json_to_sheet(records);
+
+  if (format === 'json') {
+    const json = JSON.stringify(records);
+
+    fs.writeFile(absFilePath, json, () => null);
+
+    return relFilePath;
+  }
+
+  const parsedRecords = [...records];
+
+  parsedRecords.forEach((record) => {
+    Object.keys(record).forEach((key) => {
+      if (Array.isArray(record[key])) {
+        record[key] = record[key].toString();
+      }
+    });
+  });
+
+  const sheet = xlsx.utils.json_to_sheet(parsedRecords);
 
   xlsx.utils.book_append_sheet(workBook, sheet, fileName);
 
   try {
-    if (format === 'json') {
-      const json = JSON.stringify(records);
-
-      fs.writeFile(absFilePath, json, () => null);
-
-      return relFilePath;
-    } else if (supportedFormats.includes(format)) {
+    if (supportedFormats.includes(format)) {
       await xlsx.writeFileAsync(
         absFilePath,
         workBook,

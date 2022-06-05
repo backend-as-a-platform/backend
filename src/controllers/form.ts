@@ -162,7 +162,7 @@ class FormController {
     const { formId } = params;
 
     try {
-      res.send(await service.getFormFields(currentUser._id, formId));
+      res.send(await service.getFormInfo(currentUser._id, formId));
     } catch (err) {
       next({ status: 404 });
     }
