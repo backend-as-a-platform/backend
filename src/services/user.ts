@@ -9,7 +9,7 @@ import { throwDuplicate } from '../lib/error';
 const key = config('SENDGRID_API_KEY');
 const from = config('SENDGRID_VERIFIED_EMAIL');
 const hostname = config('HOSTNAME');
-const frontendUri = config('FRONTEND_URI');
+const frontendURI = config('FRONTEND_URI');
 
 mail.setApiKey(key);
 
@@ -122,7 +122,7 @@ Team BaaP
     const user = await User.findOne({ email });
 
     if (user) {
-      const passwordResetToken = user.getPasswordResetToken();
+      const passwordResetToken = await user.getPasswordResetToken();
 
       const msg = {
         from,
@@ -132,7 +132,7 @@ Team BaaP
 
 Someone (hopefully you) has requested a password reset for your BaaP account. Follow the link below to set a new password:
 
-${frontendUri}/reset-password/${passwordResetToken}
+${frontendURI}/reset-password/${passwordResetToken}
 
 The link is valid only for one hour.
 
