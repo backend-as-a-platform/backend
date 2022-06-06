@@ -116,7 +116,7 @@ class UserController {
         ));
 
       res.send({
-        result: `verification link has been sent to ${user.email}`,
+        result: `verification link has been mailed to ${user.email}`,
         debug: isDevMode
           ? `${config('HOSTNAME')}/users/verify/${verificationToken}`
           : undefined,
@@ -141,7 +141,7 @@ class UserController {
       );
 
       res.send({
-        result: `password reset instructions have been sent to ${email}`,
+        result: `password reset instructions have been mailed to ${email}`,
         debug: isDevMode
           ? `POST ${config(
               'HOSTNAME'
