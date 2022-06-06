@@ -31,7 +31,7 @@ export default (path: string, apiRouter: Router): void => {
     validateUserEmail,
     controller.getUserByEmail
   );
-  route.post('/ids', auth, controller.getUsersByIds);
+  route.post('/find', auth, controller.getUsersByIds);
   route.get('/:id/send-verification', controller.sendVerification);
   route.get('/:id/avatar.png', controller.getAvatar);
 
